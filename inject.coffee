@@ -1,11 +1,10 @@
 BASE_URL="http://localhost:3000"
 
-HELP="This message is encrypted. Visit #{BASE_URL} to learn how to deal with it.\n"
+HELP="This message is encrypted. Visit #{BASE_URL} to learn how to deal with it.\n\n"
 
-CRYPTO_HEADER="-----BEGIN-ENCRYPTED-MESSAGE-----"
+CRYPTO_HEADER="ENCT1"
 
-CRYPTO_FOOTER="-----END-ENCRYPTED-MESSAGE-----"
-
+CRYPTO_FOOTER="IWEMS"
 
 # Popup dialog
 class Popup
@@ -23,10 +22,11 @@ class Popup
             <div style='position: fixed; z-index: 9999; background: #BCF; border: solid gray 1px;'>
                 <div style='position: absolute; left: 0; right: 0; background: #C8D6FF; margin: 4px; height: 32px;'>
                     <b>#{title}</b>
-`                   <img style='border: none; float: right;' id='crypt-close' src='#{@base}/close.png'/>
+                    <img style='border: none; float: right;' id='crypt-close' src='#{@base}/close.png'/>
                 </div>
                 <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; background: white; left: 0; right: 0;'>
                     #{controls}
+                    <span style='position: absolute; display: block; left: 4px; bottom: 4px; color: red;' id='crypt-message''></span>
                     <input style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-encode' type='button' value='#{action}'/>
                 </div>
             </div>
@@ -38,16 +38,41 @@ class Popup
         # Close handler
         $('#crypt-close').click => @hide()
         # Encrypt handler
-        $('#crypt-key').focus()
-        $('#crypt-encode').click =>
+        $('#crypt-key').focus().keypress (e)=> if (e.which == 13) then @run()
+        $('#crypt-encode').click => @run()
+
+
+    alert: (msg) ->
+        $('#crypt-message').html( msg )
+
+    run: ->
             if @encrypted
                 while @encrypted
-                    @updateText Aes.Ctr.decrypt( @txt, @key(), 256)
+                    hash = @txt[0...64]
+                    text = @txt[64...]
+                    text = Aes.Ctr.decrypt( text, @key(), 256)
+                    newHash = Sha256.hash text
+                    if hash == newHash
+                        @updateText text
+                    else
+                        @alert "Invalid key"
+                        return false
                     break unless @parse()
             else
                 if @parse()
-                    @updateText HELP + "\n" + CRYPTO_HEADER + "\n" + Aes.Ctr.encrypt( @txt, @key(), 256) + "\n" + CRYPTO_FOOTER
+                    hash = Sha256.hash @txt
+                    @updateText HELP + @dump( hash + Aes.Ctr.encrypt( @txt, @key(), 256) )
             @hide()
+
+    dump: (text) ->
+        i = 0
+        out = ""
+        for ch in CRYPTO_HEADER + text + CRYPTO_FOOTER
+            out += ch
+            i += 1
+            if (i % 5) == 0 then out += ' '
+            if (i % 60 ) == 0 then out += '\n'
+        out
 
     # Encryption key
     key: ->
@@ -61,11 +86,11 @@ class Popup
             @msg.html( value.replace /\n/g,'<br/>' )
 
     parse: ->
-        @msg = $('#canvas_frame').contents().find( "*:contains('#{CRYPTO_HEADER.trim()}'):last" )
+        @msg = $('#canvas_frame').contents().find( "*:contains('#{CRYPTO_HEADER.trim()}'):last:visible" )
         if @msg.length
             @txt = @msg.get(0).textContent||@msg.get(0).innerText
         else
-            @msg = $('body').find( "*:contains('#{CRYPTO_HEADER.trim()}'):last" )
+            @msg = $('body').find( "*:contains('#{CRYPTO_HEADER.trim()}'):last:visible" )
             if @msg.length
                 @txt = @msg.get(0).textContent||@msg.get(0).innerText
             else
