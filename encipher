@@ -1,0 +1,36 @@
+#!/bin/bash
+HOME=$(cd `dirname $0` && pwd)
+DAEMON=server.coffee
+USER=encipher
+GROUP=encipher
+COFFEE=$(which coffee)
+
+case "$1" in
+  start)
+    echo "Starting $DAEMON"
+    # Activate the virtual environment
+    # Run start-stop-daemon, the $DAEMON variable contains the path to the
+    # application to run
+    start-stop-daemon --start \
+        --background \
+	--make-pidfile \
+        --pidfile /tmp/$DAEMON.pid \
+        --chdir $HOME \
+        --user  $USER \
+        --group $GROUP \
+        --chuid $USER \
+        --exec $COFFEE -- $HOME/$DAEMON
+    ;;
+  stop)
+    echo "Stopping $DAEMON"
+    start-stop-daemon --stop --pidfile /tmp/$DAEMON.pid --verbose
+    ;;
+
+  *)
+    # Refuse to do other stuff
+    echo "Usage: $0 {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0
