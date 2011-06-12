@@ -1,4 +1,5 @@
 #!/bin/sh
+echo "Compile site"
 set +e
 coffee -c -o ./public/javascripts inject.coffee
 coffee -c encipher.coffee
