@@ -7,7 +7,7 @@ NODE=$(which node)
 
 case "$1" in
   start)
-    echo "Starting $DAEMON"
+    echo "Starting $DAEMON (home: $HOME)"
     # Activate the virtual environment
     # Run start-stop-daemon, the $DAEMON variable contains the path to the
     # application to run
