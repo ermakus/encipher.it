@@ -22,7 +22,7 @@ app.configure 'production', ->
 app.get '/', (req, res)->
     bookmarklet = "javascript:(function(){document.body.appendChild(document.createElement('script')).src='#{BASE_URL}/javascripts/inject.js';})();"
     res.render 'index', {
-        title: 'Mail Protector',
+        title: 'Encipher It',
         bookmarklet
     }
 

@@ -1,18 +1,40 @@
-h1= title
-p
-    b Welcome to #{title} - 
-    span text encoder/decoder for the web mail
-p
-    span You can use it to protect your Google Mail e-mails, Outlook web access or anything else
-p
-    span Please add link below to your bookmarks
+.line
+.article
+    h2 1. Add bookmark
+    .line
+    .articleBody.clear
+        p 
+            span Click and drag the &nbsp;
+            a(href=bookmarklet) Encipher It
+            span &nbsp;&nbsp;link to your Bookmarks Bar. This will became your bookmark. 
 
-p
-    b
-        a(href=bookmarklet) Mail Protector
-p
-    span Encrypt your letter by clicking this bookmark from WEB mail. Decrypt received letters same way.
-p
-    span You can also use this page to encrypt and decrypt your text.
-p
-    textarea(name="txtbdy",cols="120",rows="30")
+.article
+    h2 2. Compose the message
+    .line 
+    .articleBody.clear
+        p
+            span Login to Google Mail, Facebook or other site where you want to protect the text. Type your message and click the bookmark.
+
+.article
+    h2 3. Enter the password
+    .line 
+    .articleBody.clear
+        p
+            span Pop-up box will appear. Enter the password and click the "Encrypt" button. Your text becoming unreadable until you click bookmark again and re-enter the password again.
+
+#try.article
+    h2 Encode and decode your text
+    .line 
+    .articleBody.clear
+        p
+            span Use this text box to encode/decode the text - just copy and paste, then click 
+            a(href=bookmarklet) Encipher It
+        p
+            textarea(name="txtbdy") My Top Secret Info
+
+        p
+            span We use 
+            a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") Advanced Encryption Standard 
+            span to protect your data. All encoding/decoding is performed on your local PC.
+
+

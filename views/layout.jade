@@ -1,6 +1,20 @@
 !!!
 html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body!= body
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/style.css')
+    body
+        #page.section
+            .header
+                h1= title
+                h3 Text encoder for Google Mail or anything else
+                .nav.clear
+                    ul
+                        li
+                            a(href="#try") Try It Now
+
+            #articles.section!= body
+            .footer
+                .line
+                a(href="href://www.ermak.us") Encipher.It &copy; Copyright 2011 Anton Ermak 
+                a(href="http://www.movable-type.co.uk/scripts/aes.html",rel="nofollow",target='_new') AES and SHA256 implementation &copy; Chris Veness 2005-2011
