@@ -132,7 +132,7 @@ div.nav ul li a:hover{
 	background-color:#f0f0f0;
 }
 
-div.nav, div.article, div.nav ul li a,div.figure{
+textarea, div.nav, div.article, div.nav ul li a,div.figure{
 	/* Applying CSS3 rounded corners: */
 	-moz-border-radius:10px;
 	-webkit-border-radius:10px;

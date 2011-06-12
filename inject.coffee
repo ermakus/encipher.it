@@ -19,14 +19,14 @@ class Popup
             controls = "Please switch to plain text if you compose it in GMail rich formatting mode."
 
         @frame = $("
-            <div style='position: fixed; z-index: 9999; background: #BCF; border: solid gray 1px;'>
-                <div style='position: absolute; left: 0; right: 0; background: #C8D6FF; margin: 4px; height: 32px;'>
-                    <b>#{title}</b>
+            <div style='position: fixed; z-index: 9999; background: #355664; border: solid gray 1px; moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px'>
+                <div style='position: absolute; left: 0; right: 0; color: white; margin: 4px; height: 32px;'>
+                    <b style='padding: 8px; float: left;'>#{title}</b>
                     <img style='border: none; float: right;' id='crypt-close' src='#{@base}/close.png'/>
                 </div>
-                <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; background: white; left: 0; right: 0;'>
+                <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; left: 0; right: 0;'>
                     #{controls}
-                    <span style='position: absolute; display: block; left: 4px; bottom: 4px; color: red;' id='crypt-message''></span>
+                    <span style='position: absolute; display: block; left: 4px; bottom: 4px; color: #FFA0A0;' id='crypt-message''></span>
                     <input disabled='true' style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-encode' type='button' value='#{action}'/>
                 </div>
             </div>
@@ -65,6 +65,9 @@ class Popup
                     break unless @parse()
             else
                 if @parse()
+                    if not @txt
+                        @alert("Text is empty")
+                        return false
                     hash = Sha256.hash @txt
                     @updateText HELP + @dump( hash + Aes.Ctr.encrypt( @txt, @key(), 256) )
             @hide()
@@ -135,7 +138,7 @@ show = ->
     if window.CRYPT_GUI
        window.CRYPT_GUI.hide()
     else
-       window.CRYPT_GUI = new Popup( BASE_URL, 400, 110 )
+       window.CRYPT_GUI = new Popup( BASE_URL, 400, 105 )
 
 # Entry point
 main = ->
