@@ -27,7 +27,7 @@ class Popup
                 <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; background: white; left: 0; right: 0;'>
                     #{controls}
                     <span style='position: absolute; display: block; left: 4px; bottom: 4px; color: red;' id='crypt-message''></span>
-                    <input style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-encode' type='button' value='#{action}'/>
+                    <input disabled='true' style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-encode' type='button' value='#{action}'/>
                 </div>
             </div>
         ")
@@ -38,7 +38,12 @@ class Popup
         # Close handler
         $('#crypt-close').click => @hide()
         # Encrypt handler
-        $('#crypt-key').focus().keypress (e)=> if (e.which == 13) then @run()
+        $('#crypt-key').focus().keyup (e)=>
+            enabled = @key() != ''
+            $('#crypt-encode').attr('disabled', not enabled )
+            if (e.which == 27) then return @hide()
+            if (e.which == 13 and enabled) then return @run()
+
         $('#crypt-encode').click => @run()
 
 
