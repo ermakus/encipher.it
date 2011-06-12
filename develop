@@ -1,2 +1,2 @@
 #!/bin/sh
-coffee -c --watch -o ./public/javascripts *.coffee
+coffee -c --watch -o ./public/javascripts inject.coffee
