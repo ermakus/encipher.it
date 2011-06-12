@@ -1,7 +1,7 @@
 (function() {
   var BASE_URL, CRYPTO_FOOTER, CRYPTO_HEADER, HELP, Popup, main, show;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-  BASE_URL = "http://localhost:3000";
+  BASE_URL = "http://encipher.it";
   HELP = "This message is encrypted. Visit " + BASE_URL + " to learn how to deal with it.\n";
   CRYPTO_HEADER = "-----BEGIN-ENCRYPTED-MESSAGE-----";
   CRYPTO_FOOTER = "-----END-ENCRYPTED-MESSAGE-----";

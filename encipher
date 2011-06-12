@@ -1,9 +1,9 @@
 #!/bin/bash
 HOME=$(cd `dirname $0` && pwd)
-DAEMON=server.coffee
+DAEMON=encipher.js
 USER=encipher
 GROUP=encipher
-COFFEE=$(which coffee)
+NODE=$(which node)
 
 case "$1" in
   start)
@@ -19,7 +19,7 @@ case "$1" in
         --user  $USER \
         --group $GROUP \
         --chuid $USER \
-        --exec $COFFEE -- $HOME/$DAEMON
+        --exec $NODE -- $HOME/$DAEMON
     ;;
   stop)
     echo "Stopping $DAEMON"
