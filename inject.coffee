@@ -9,45 +9,52 @@ CRYPTO_FOOTER="IwEmS"
 
 # Popup dialog
 class Popup
-
+ 
     # Create dialog
     constructor: (@base, @width, @height) ->
-        if @parse()
-            [title, action] =  if @encrypted then ["Enter decryption key","Decrypt"] else ["Enter encryption key","Encrypt"]
-            controls = "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px;' id='crypt-key'/>"
-        else
-            [title, action] = ["Letter not found","Cancel"]
-            controls = "Please switch to plain text if you compose it in GMail rich formatting mode."
 
+        if @parse()
+            body = "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%;' id='crypt-key'/>"
+            if @encrypted
+                @show "Enter decryption key","Decrypt", body
+            else
+                @show "Enter encryption key","Encrypt", body
+        else
+            @show "Message not found","Cancel","Please select input area"
+
+        # Encrypt handler
+        $('#crypt-key').focus().keyup (e)=>
+            enabled = @key() != ''
+            $('#crypt-btn').attr('disabled', not enabled )
+            if (e.which == 27) then return @hide()
+            if (e.which == 13 and enabled) then return @run()
+
+
+    show: (title, action, body) ->
         @frame = $("
-            <div style='position: fixed; z-index: 9999; background: #355664; border: solid gray 1px; moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px'>
+            <div style='position: fixed; z-index: 9999; background: #355664; border: solid gray 1px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px'>
                 <div style='position: absolute; left: 0; right: 0; color: white; margin: 4px; height: 32px;'>
                     <b style='padding: 8px; float: left;'>#{title}</b>
                     <img style='border: none; float: right;' id='crypt-close' src='#{@base}/close.png'/>
                 </div>
                 <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; left: 0; right: 0;'>
-                    #{controls}
+                    #{body}
                     <span style='position: absolute; display: block; left: 4px; bottom: 4px; color: #FFA0A0;' id='crypt-message''></span>
-                    <input disabled='true' style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-encode' type='button' value='#{action}'/>
+                    <input disabled='true' style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-btn' type='button' value='#{action}'/>
                 </div>
             </div>
         ")
         $('body').append( @frame )
-        @layout()
+        if action == "Cancel"
+            $('#crypt-btn').attr('disabled',false).click => @hide()
+        else
+            $('#crypt-btn').click => @run()
         # Resize handler
         $(window).resize => @layout()
         # Close handler
         $('#crypt-close').click => @hide()
-        # Encrypt handler
-        $('#crypt-key').focus().keyup (e)=>
-            enabled = @key() != ''
-            $('#crypt-encode').attr('disabled', not enabled )
-            if (e.which == 27) then return @hide()
-            if (e.which == 13 and enabled) then return @run()
-
-        $('#crypt-encode').click => @run()
-
-
+        @layout()
+ 
     alert: (msg) ->
         $('#crypt-message').html( msg )
 
@@ -106,7 +113,7 @@ class Popup
 
         # Extract encoded block from element and put it to collection
         found = (elem,txt) ->
-            txt = txt.replace /[\n <>]/g,''
+            txt = txt.replace /[\n ]/g,''
             hdr = txt.indexOf( CRYPTO_HEADER )
             ftr = txt.indexOf( CRYPTO_FOOTER )
             if hdr >= 0 and ftr >= 0
@@ -140,7 +147,11 @@ class Popup
         # Traverse body and all iframes
         traverseBody = (body) ->
             body.each -> traverse this
-            body.find("iframe").each -> traverseBody( $(this).contents().find('body') )
+            body.find("iframe").each ->
+                try
+                    traverseBody( $(this).contents().find('body') )
+                catch e
+
 
         traverseBody $('body')
     
