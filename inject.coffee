@@ -18,9 +18,12 @@ class Popup
             if @encrypted
                 @show "Enter decryption key","Decrypt", body
             else
-                @show "Enter encryption key","Encrypt", body
+                if @text
+                    @show "Enter encryption key","Encrypt", body
+                else
+                    @show "Message is empty","Cancel","Please type the message first"
         else
-            @show "Message not found","Cancel","Please select input area"
+            @show "Message not found","Cancel","Please select the input area"
 
         # Encrypt handler
         $('#crypt-key').focus().keyup (e)=>
@@ -46,7 +49,7 @@ class Popup
         ")
         $('body').append( @frame )
         if action == "Cancel"
-            $('#crypt-btn').attr('disabled',false).click => @hide()
+            $('#crypt-btn').attr('disabled',false).click( => @hide() ).keyup( (e)=> if e.which == 27 then @hide() ).focus()
         else
             $('#crypt-btn').click => @run()
         # Resize handler
@@ -76,12 +79,8 @@ class Popup
                     @alert "Invalid key"
                     return false
             else
-                if @parse()
-                    if not @text
-                        @alert("Text is empty")
-                        return false
-                    hash = Sha256.hash @text
-                    @updateNode @node, HELP + @dump( hash + Aes.Ctr.encrypt( @text, @key(), 256) )
+                hash = Sha256.hash @text
+                @updateNode @node, HELP + @dump( hash + Aes.Ctr.encrypt( @text, @key(), 256) )
             @hide()
 
     dump: (text) ->
@@ -100,7 +99,7 @@ class Popup
 
     # Update text 
     updateNode: (node, value)->
-        if node.is('textarea') or node.is('input')
+        if node.is('textarea')
             node.val( value )
         else
             node.html( value.replace /\n/g,'<br/>' )
@@ -174,9 +173,6 @@ class Popup
         if node.length == 1 then return [node, node.val()]
         # If many textareas, then select focused one
         if node.length > 1 then node = $('textarea:focus')
-        if node.length == 1 then return [node, node.val()]
-        # else select focused input
-        node = $('input[type=text]:focus')
         if node.length == 1 then return [node, node.val()]
         # Fail finally
         return [undefined,undefined]
