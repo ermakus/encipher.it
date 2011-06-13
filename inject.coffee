@@ -84,13 +84,13 @@ class Popup
             @hide()
 
     dump: (text) ->
+        text = CRYPTO_HEADER + text + CRYPTO_FOOTER
+
         i = 0
         out = ""
-        for ch in CRYPTO_HEADER + text + CRYPTO_FOOTER
-            out += ch
-            i += 1
-            if (i % 5) == 0 then out += ' '
-            if (i % 60 ) == 0 then out += '\n'
+        for i in [0...text.length]
+            out += text.charAt i
+            if (i % 80 ) == 79 then out += '\n'
         out
 
     # Encryption key
