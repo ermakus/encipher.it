@@ -2,9 +2,10 @@ BASE_URL="http://localhost:3000"
 
 HELP="This message is encrypted. Visit #{BASE_URL} to learn how to deal with it.\n\n"
 
-CRYPTO_HEADER="ENCT1"
+CRYPTO_HEADER="EnCt1"
 
-CRYPTO_FOOTER="IWEMS"
+CRYPTO_FOOTER="IwEmS"
+
 
 # Popup dialog
 class Popup
@@ -52,24 +53,28 @@ class Popup
 
     run: ->
             if @encrypted
-                while @encrypted
-                    hash = @txt[0...64]
-                    text = @txt[64...]
+                successs = false
+                for i in [0...@nodes.length]
+                    text = @texts[i]
+                    node = @nodes[i]
+
+                    hash = text[0...64]
+                    text = text[64...]
                     text = Aes.Ctr.decrypt( text, @key(), 256)
                     newHash = Sha256.hash text
                     if hash == newHash
-                        @updateText text
-                    else
-                        @alert "Invalid key"
-                        return false
-                    break unless @parse()
+                        @updateNode node, text
+                        success = true
+                if not success
+                    @alert "Invalid key"
+                    return false
             else
                 if @parse()
-                    if not @txt
+                    if not @text
                         @alert("Text is empty")
                         return false
-                    hash = Sha256.hash @txt
-                    @updateText HELP + @dump( hash + Aes.Ctr.encrypt( @txt, @key(), 256) )
+                    hash = Sha256.hash @text
+                    @updateNode @node, HELP + @dump( hash + Aes.Ctr.encrypt( @text, @key(), 256) )
             @hide()
 
     dump: (text) ->
@@ -87,43 +92,89 @@ class Popup
         $('#crypt-key').attr('value')
 
     # Update text 
-    updateText: (value)->
-        if @msg.is('textarea')
-            @msg.val( value )
+    updateNode: (node, value)->
+        if node.is('textarea') or node.is('input')
+            node.val( value )
         else
-            @msg.html( value.replace /\n/g,'<br/>' )
+            node.html( value.replace /\n/g,'<br/>' )
 
-    parse: ->
-        @msg = $('#canvas_frame').contents().find( "*:contains('#{CRYPTO_HEADER.trim()}'):last:visible" )
-        if @msg.length
-            @txt = @msg.get(0).textContent||@msg.get(0).innerText
-        else
-            @msg = $('body').find( "*:contains('#{CRYPTO_HEADER.trim()}'):last:visible" )
-            if @msg.length
-                @txt = @msg.get(0).textContent||@msg.get(0).innerText
+
+    # Traverse document and collect all encrypted blocks to collection
+    findEncrypted: ->
+        # Collection of elements and related text blocks
+        [nodes, texts] = [[],[]]
+
+        # Extract encoded block from element and put it to collection
+        found = (elem,txt) ->
+            txt = txt.replace /[\n <>]/g,''
+            hdr = txt.indexOf( CRYPTO_HEADER )
+            ftr = txt.indexOf( CRYPTO_FOOTER )
+            if hdr >= 0 and ftr >= 0
+                txt = txt[ hdr + CRYPTO_HEADER.length ... ftr ]
+                nodes.push elem
+                texts.push txt
+                return 1
+            return 0
+
+        # Traverse DOM and search for encoded block headers
+        traverse = (node) ->
+            skip = 0
+            # Text node
+            if node.nodeType == 3 and node.data.indexOf( CRYPTO_HEADER ) >= 0
+                elem = $(node.parentNode)
+                skip = found( elem, elem.text() )
             else
-                @msg = $('#canvas_frame').contents().find('textarea[name=body]')
-                if @msg.length
-                    @txt = @msg.val()
-                else
-                    @msg = $('textarea')
-                    if @msg.length
-                        @txt = @msg.val()
+                # Element node
+                if (node.nodeType == 1 && !/(script|style)/i.test(node.tagName))
+                    # Text area or input
+                    if /(input|textarea)/i.test( node.tagName )
+                        elem = $(node)
+                        found( elem, elem.val() )
                     else
-                        return false
+                        # Recursive traverse children
+                        if node.childNodes
+                            for i in  [0...node.childNodes.length]
+                                i += traverse node.childNodes[i]
+            return skip
 
-        return false unless @msg.length
+        # Traverse body and all iframes
+        traverseBody = (body) ->
+            body.each -> traverse this
+            body.find("iframe").each -> traverseBody( $(this).contents().find('body') )
 
-        if @txt.indexOf( CRYPTO_HEADER ) >= 0
-            @txt = @txt.replace /[\n <>]/g,''
-            hdr = @txt.indexOf( CRYPTO_HEADER )
-            ftr = @txt.indexOf( CRYPTO_FOOTER )
-            @txt = @txt[ hdr + CRYPTO_HEADER.length ... ftr ]
-            @encrypted = true
-        else
-            @encrypted = false
+        traverseBody $('body')
+    
+        return [nodes,texts]
 
-        true
+
+    # Return input element and text (simple heuristic used)
+    findInput: ->
+        # Check for gmail first
+        # Plain textarea
+        node = $('#canvas_frame').contents().find('textarea[name=body]:visible')
+        if node.length then return [node, node.val()]
+        # Rich formatting
+        node = $('#canvas_frame').contents().find('iframe.editable').contents().find('body')
+        if node.length then return [node, node.html()]
+        # Fail otherways if we on gmail
+        if $('#canvas_frame').length then return [undefined,undefined]
+        # Return textarea if only one
+        node = $('textarea')
+        if node.length == 1 then return [node, node.val()]
+        # If many textareas, then select focused one
+        if node.length > 1 then node = $('textarea:focus')
+        if node.length == 1 then return [node, node.val()]
+        # else select focused input
+        node = $('input[type=text]:focus')
+        if node.length == 1 then return [node, node.val()]
+        # Fail finally
+        return [undefined,undefined]
+ 
+    parse: ->
+        [@nodes, @texts] = @findEncrypted()
+        [@node,  @text]  = @findInput()
+        @encrypted = @nodes.length > 0
+        return @encrypted or @node != undefined
 
     # Hide dialog
     hide: ->
@@ -156,6 +207,8 @@ main = ->
             count -= 1
             if count == 0
                 window.CRYPT_LOADED =true
+                # JQuery focus selector
+                jQuery.expr[':'].focus = ( elem ) -> return elem == document.activeElement && ( elem.type || elem.href )
                 show()
 
         for script in scripts
