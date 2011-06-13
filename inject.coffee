@@ -70,7 +70,7 @@ class Popup
 
                     hash = text[0...64]
                     text = text[64...]
-                    text = Aes.Ctr.decrypt( text, @key(), 256)
+                    text = Aes.Ctr.decrypt( text, Sha256.hash( @key() ), 256)
                     newHash = Sha256.hash text
                     if hash == newHash
                         @updateNode node, text
@@ -80,7 +80,7 @@ class Popup
                     return false
             else
                 hash = Sha256.hash @text
-                @updateNode @node, HELP + @dump( hash + Aes.Ctr.encrypt( @text, @key(), 256) )
+                @updateNode @node, HELP + @dump( hash + Aes.Ctr.encrypt( @text, Sha256.hash( @key() ), 256) )
             @hide()
 
     dump: (text) ->

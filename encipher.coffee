@@ -1,6 +1,7 @@
 BASE_URL="http://localhost:3000"
 
 express = require 'express'
+mailer = require 'mailer'
 
 app = module.exports = express.createServer()
 
@@ -22,9 +23,27 @@ app.configure 'production', ->
 app.get '/', (req, res)->
     bookmarklet = "javascript:(function(){document.body.appendChild(document.createElement('script')).src='#{BASE_URL}/javascripts/inject.js';})();"
     res.render 'index', {
-        title: 'Encipher It',
+        title: 'Encipher.It',
         bookmarklet
     }
+
+app.post '/feedback', (req, res)->
+    name = req.param('name')
+    email = req.param('email')
+    message = req.param('message')
+    console.log "Feedback from #{name} <#{email}>: #{message}"
+
+    mailer.send {
+        'host' : "localhost",
+        'port' : "25",
+        'domain' : "localhost",
+        'to' : "anton@ermak.us",
+        'from' : email,
+        'subject' : "Feedback from #{name} (encipher.it)",
+        'body': message,
+        'username': 'decipher',
+        'authentication': false }
+    res.send( "success" )
 
 if !module.parent
     app.listen(3000)

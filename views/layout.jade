@@ -3,6 +3,10 @@ html
     head
         title= title
         link(rel='stylesheet', href='/stylesheets/style.css')
+        link(rel='stylesheet', href='/stylesheets/contactable.css')
+        script(type='text/javascript', src='/javascripts/jquery.min.js')
+        script(type='text/javascript', src='/javascripts/jquery.validate.pack.js')
+        script(type='text/javascript', src='/javascripts/jquery.contactable.js')
         script
             var _gaq = _gaq || [];
             _gaq.push(['_setAccount', 'UA-17946320-4']);
@@ -12,7 +16,9 @@ html
                 ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
                 var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
             })();
+            $(function(){ $('#contactable').contactable({url: '/feedback'});} );
     body
+        #contactable
         #page.section
             .header
                 h1= title
