@@ -168,10 +168,13 @@ class Popup
         if node.length then return [node, node.html()]
         # Fail otherways if we on gmail
         if $('#canvas_frame').length then return [undefined,undefined]
+        # Outlook web access or own site
+        node = $('textarea[name=txtbdy]')
+        if node.length == 1 then return [node, node.val()]
         # Return textarea if only one
         node = $('textarea')
         if node.length == 1 then return [node, node.val()]
-        # If many textareas, then select focused one
+         # If many textareas, then select focused one
         if node.length > 1 then node = $('textarea:focus')
         if node.length == 1 then return [node, node.val()]
         # Fail finally
