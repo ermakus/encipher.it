@@ -3,39 +3,62 @@
     h2 1. Add bookmark
     .line
     .articleBody.clear
-        p 
-            span Click and drag the &nbsp;
-            a(href=bookmarklet) Encipher It
-            span &nbsp;&nbsp;link to your Bookmarks Bar. This will became your bookmark. 
+        .figure1
+            img(src="/images/step1.png")
+         p 
+            b Firefox or Goole Chrome:
+            br
+            span Drag this link: &nbsp;
+            a(href=bookmarklet)
+                b Encipher It
+            span &nbsp;&nbsp; to your Bookmarks Bar
 
-.article
-    h2 2. Compose the message
-    .line 
-    .articleBody.clear
         p
-            span Login to Google Mail, Facebook or other site where you want to protect the text. Type your message and click the bookmark.
+            b Internet Explorer:
+            br
+            span Right click: &nbsp;
+            a(href=bookmarklet)
+                b Encipher It
+            span &nbsp; and click "Add to Favorites"
 
 .article
-    h2 3. Protect by password
+    h2 2. Encrypt message
     .line 
     .articleBody.clear
         .figure
             img(src="/images/step2.png", width="500")
         p
-            span Pop-up box will appear. Enter the password and click the "Encrypt" button. Your text becoming protecting until you re-enter the password again.
+            span Login to 
+            b Google Mail, 
+            b Facebook 
+            span or other site where you want to protect the text. 
+        p Type your message and click the bookmark.
+        p Enter the password and click the "Encrypt" button. 
+
+
+.article
+    h2 3. Decrypt message
+    .line 
+    .articleBody.clear
+        .figure
+            img(src="/images/step3.png", width="500")
+        p To decrypt the message on the page, just click bookmark again and reenter the same password.
 
 #try.article
-    h2 Encode and decode your text
+    h2 Try it
     .line 
     .articleBody.clear
         p
-            span Use this text box to encode/decode the text - just copy and paste, then click 
-            a(href=bookmarklet) Encipher It
+            span You can use this text box to encrypt and decrypt messages
+        p
+            span Copy and paste text, then click 
+            a(href=bookmarklet)
+                b Encipher It
         p
             textarea#txt(name="txtbdy")
 
         p
             span We use 
             a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") Advanced Encryption Standard 
-            span to protect your data. All encoding/decoding is performed on your local PC.
+            span to protect your data. All encoding/decoding is performed locally in your browser.
 

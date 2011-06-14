@@ -164,6 +164,16 @@ div.figure{
 	width:500px;
 }
 
+div.figure1{
+	border:3px solid #142830;
+	float:right;
+	height:154px;
+	margin-left:15px;
+	overflow:hidden;
+	width:320px;
+}
+
+
 div.figure:hover{
 	-moz-box-shadow:0 0 2px #4D7788;
 	-webkit-box-shadow:0 0 2px #4D7788;
