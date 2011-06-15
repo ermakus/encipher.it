@@ -7,6 +7,12 @@ var Base64 = {};  // Base64 namespace
 
 Base64.code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
+Base64.random = function(len) {
+    var text = "";
+    for( var i=0; i < len; i++ )
+            text += Base64.code.charAt(Math.floor(Math.random() * Base64.code.length));
+    return text;
+}
 /**
  * Encode string into Base64, as defined by RFC 4648 [http://tools.ietf.org/html/rfc4648]
  * (instance method extending String object). As per RFC 4648, no newlines are added.

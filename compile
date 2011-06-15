@@ -1,6 +1,6 @@
 #!/bin/sh
 echo "Compile site"
 set +e
-coffee -c -o ./public/javascripts inject.coffee
+coffee -c -o ./public/javascripts inject.coffee inject.v2.coffee
 coffee -c encipher.coffee
 coffee patch.coffee ./encipher.js ./public/javascripts/inject.js https://encipher.it

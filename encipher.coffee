@@ -5,6 +5,9 @@ mailer = require 'mailer'
 
 app = module.exports = express.createServer()
 
+bookmarklet1 = "javascript:(function(){document.body.appendChild(document.createElement('script')).src='#{BASE_URL}/javascripts/inject.js';})();"
+bookmarklet = "javascript:(function(){document.body.appendChild(document.createElement('script')).src='#{BASE_URL}/javascripts/inject.v2.js';})();"
+
 app.configure ->
     app.set('views', __dirname + '/views')
     app.set('view engine', 'jade')
@@ -19,12 +22,11 @@ app.configure 'development', ->
 
 app.configure 'production', ->
     app.use(express.errorHandler())
-
+    
 app.get '/', (req, res)->
-    bookmarklet = "javascript:(function(){document.body.appendChild(document.createElement('script')).src='#{BASE_URL}/javascripts/inject.js';})();"
     res.render 'index', {
         title: 'AES text encryptor',
-        bookmarklet
+        bookmarklet, bookmarklet1
     }
 
 app.post '/feedback', (req, res)->

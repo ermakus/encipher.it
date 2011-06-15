@@ -2,16 +2,15 @@ BASE_URL="http://localhost:3000"
 
 HELP="This message is encrypted. Visit #{BASE_URL} to learn how to deal with it.\n\n"
 
-CRYPTO_HEADER="EnCt1"
+CRYPTO_HEADER="EnCt2"
 
 CRYPTO_FOOTER="IwEmS"
 
-
 # Popup dialog
 class Popup
- 
-    # Create dialog
-    constructor: (@base, @width, @height) ->
+
+    constructor: ->
+        @cache = {}
 
         if @parse()
             body = "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%;' id='crypt-key'/>"
@@ -27,22 +26,21 @@ class Popup
 
         # Encrypt handler
         $('#crypt-key').focus().keyup (e)=>
-            enabled = @key() != ''
+            enabled = @password() != ''
             $('#crypt-btn').attr('disabled', not enabled )
             if (e.which == 27) then return @hide()
             if (e.which == 13 and enabled) then return @run()
-
 
     show: (title, action, body) ->
         @frame = $("
             <div style='position: fixed; z-index: 9999; background: #355664; border: solid gray 1px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px'>
                 <div style='position: absolute; left: 0; right: 0; color: white; margin: 4px; height: 32px;'>
                     <b style='padding: 8px; float: left;'>#{title}</b>
-                    <img style='border: none; float: right;' id='crypt-close' src='#{@base}/close.png'/>
+                    <img style='border: none; float: right;' id='crypt-close' src='#{BASE_URL}/close.png'/>
                 </div>
                 <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; left: 0; right: 0;'>
                     #{body}
-                    <span style='position: absolute; display: block; left: 4px; bottom: 4px; color: #FFA0A0;' id='crypt-message''><a href='#{@base}'>Please update to latest, more secure version</a>.</span>
+                    <b style='position: absolute; display: block; left: 4px; bottom: 4px;' id='crypt-message''></b>
                     <input disabled='true' style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-btn' type='button' value='#{action}'/>
                 </div>
             </div>
@@ -61,27 +59,83 @@ class Popup
     alert: (msg) ->
         $('#crypt-message').html( msg )
 
-    run: ->
-            if @encrypted
-                successs = false
-                for i in [0...@nodes.length]
-                    text = @texts[i]
-                    node = @nodes[i]
+    # Hide dialog
+    hide: ->
+        @frame.remove()
+        window.CRYPT_GUI = undefined
 
-                    hash = text[0...64]
-                    text = text[64...]
-                    text = Aes.Ctr.decrypt( text, Sha256.hash( @key() ), 256)
-                    newHash = Sha256.hash text
-                    if hash == newHash
-                        @updateNode node, text
-                        success = true
-                if not success
-                    @alert "Invalid key"
-                    return false
+    # Update dialog position
+    layout: ->
+        [width,height] = [400,105]
+        @frame.css {'top': ($(window).height() - height) / 2 + 'px', 'left':($(window).width() - width) / 2 + 'px', 'width':width + 'px' , 'height':height + 'px' }
+
+    # Encryption password
+    password: -> $('#crypt-key').attr('value')
+
+    # Encrypt/decrypt entry point
+    run: ->
+        callback = (res)=>
+            if res then @hide() else @alert("Invalid password")
+
+        if @encrypted
+            @decrypt( @password(), callback )
+        else
+            @encrypt( @password(), callback )
+
+    # Password based key derivation function
+    derive: (password, salt, callback) ->
+        # Check if password cached
+        cacheKey = password + salt
+        if @cache[cacheKey]
+            return callback( @cache[cacheKey] )
+        # Generate key        
+        pbkdf2 = new PBKDF2( password, salt, 1000, 32 )
+        pbkdf2.deriveKey(
+            (per)=>
+                @alert( "Generating key: #{Math.floor(per)}%" )
+            ,
+            (key)=>
+                # Put key to cache
+                @cache[cacheKey]=key
+                callback(key)
+        )
+
+    # Decrypt text in DOM node
+    decryptNode: (node, text, password, callback)->
+        hash = text[0...64]
+        salt = text[64...72]
+        text = text[72...]
+        @derive password, salt, (key) =>
+            text = Aes.Ctr.decrypt( text, key, 256 )
+            newHash = Sha256.hash text
+            if hash == newHash
+                @updateNode node, text
+                callback( true )
             else
-                hash = Sha256.hash @text
-                @updateNode @node, HELP + @dump( hash + Aes.Ctr.encrypt( @text, Sha256.hash( @key() ), 256) )
-            @hide()
+                callback( false )
+ 
+    # Decrypt all encrypted nodes
+    decrypt: (password, callback)->
+        i = 0
+        success = false
+        # Trick for sequence of async calls
+        next = =>
+            if @nodes.length > i
+                @decryptNode @nodes[i], @texts[i], password, (res)=>
+                    i += 1
+                    success ||= res
+                    next()
+            else
+                callback( success )
+        next()
+
+    # Encrypt text in input element
+    encrypt: (password, callback)->
+        hash = Sha256.hash @text
+        salt = Base64.random(8)
+        @derive password, salt, (key) =>
+            @updateNode @node, HELP + @dump( hash + salt + Aes.Ctr.encrypt( @text, key, 256) )
+            callback( true )
 
     dump: (text) ->
         text = CRYPTO_HEADER + text + CRYPTO_FOOTER
@@ -93,9 +147,6 @@ class Popup
             if (i % 80 ) == 79 then out += '\n'
         out
 
-    # Encryption key
-    key: ->
-        $('#crypt-key').attr('value')
 
     # Update text 
     updateNode: (node, value)->
@@ -112,7 +163,7 @@ class Popup
 
         # Extract encoded block from element and put it to collection
         found = (elem,txt) ->
-            txt = txt.replace /[\n ]/g,''
+            txt = txt.replace /[\n> ]/g,''
             hdr = txt.indexOf( CRYPTO_HEADER )
             ftr = txt.indexOf( CRYPTO_FOOTER )
             if hdr >= 0 and ftr >= 0
@@ -186,20 +237,12 @@ class Popup
         @encrypted = @nodes.length > 0
         return @encrypted or @node != undefined
 
-    # Hide dialog
-    hide: ->
-        @frame.remove()
-        window.CRYPT_GUI = undefined
-
-    # Update dialog position
-    layout: ->
-        @frame.css {'top': ($(window).height() - @height) / 2 + 'px', 'left':($(window).width() - @width) / 2 + 'px', 'width':@width + 'px' , 'height':@height + 'px' }
 
 show = ->
     if window.CRYPT_GUI
        window.CRYPT_GUI.hide()
     else
-       window.CRYPT_GUI = new Popup( BASE_URL, 400, 105 )
+       window.CRYPT_GUI = new Popup()
 
 # Entry point
 main = ->
@@ -207,7 +250,7 @@ main = ->
         show()
     else
         # Load javascript dependencies
-        scripts = ['jquery.min.js','AES.js','base64.js','utf8.js']
+        scripts = ['jquery.min.js','AES.js','sha1.js','pbkdf2.js','base64.js','utf8.js']
         count = scripts.length
 
         #if typeof jQuery == "undefined" or jQuery.fn.jquery != '1.4.2'
