@@ -3,4 +3,4 @@ echo "Compile site"
 set +e
 coffee -c -o ./public/javascripts inject.coffee inject.v2.coffee
 coffee -c encipher.coffee
-coffee patch.coffee ./encipher.js ./public/javascripts/inject.js https://encipher.it
+coffee patch.coffee ./encipher.js ./public/javascripts/inject.js ./public/javascripts/inject.v2.js https://encipher.it
