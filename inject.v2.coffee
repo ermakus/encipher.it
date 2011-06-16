@@ -11,7 +11,6 @@ class Popup
 
     constructor: ->
         @cache = {}
-
         if @parse()
             body = "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%;' id='crypt-key'/>"
             if @encrypted
@@ -25,14 +24,14 @@ class Popup
             @show "Message not found","Cancel","Please select the input area"
 
         # Encrypt handler
-        $('#crypt-key').focus().keyup (e)=>
+        jQuery('#crypt-key').focus().keyup (e)=>
             enabled = @password() != ''
-            $('#crypt-btn').attr('disabled', not enabled )
+            jQuery('#crypt-btn').attr('disabled', not enabled )
             if (e.which == 27) then return @hide()
             if (e.which == 13 and enabled) then return @run()
 
     show: (title, action, body) ->
-        @frame = $("
+        @frame = jQuery("
             <div style='position: fixed; z-index: 9999; background: #355664; border: solid gray 1px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px'>
                 <div style='position: absolute; left: 0; right: 0; color: white; margin: 4px; height: 32px;'>
                     <b style='padding: 8px; float: left;'>#{title}</b>
@@ -45,19 +44,19 @@ class Popup
                 </div>
             </div>
         ")
-        $('body').append( @frame )
+        jQuery('body').append( @frame )
         if action == "Cancel"
-            $('#crypt-btn').attr('disabled',false).click( => @hide() ).keyup( (e)=> if e.which == 27 then @hide() ).focus()
+            jQuery('#crypt-btn').attr('disabled',false).click( => @hide() ).keyup( (e)=> if e.which == 27 then @hide() ).focus()
         else
-            $('#crypt-btn').click => @run()
+            jQuery('#crypt-btn').click => @run()
         # Resize handler
-        $(window).resize => @layout()
+        jQuery(window).resize => @layout()
         # Close handler
-        $('#crypt-close').click => @hide()
+        jQuery('#crypt-close').click => @hide()
         @layout()
  
     alert: (msg) ->
-        $('#crypt-message').html( msg )
+        jQuery('#crypt-message').html( msg )
 
     # Hide dialog
     hide: ->
@@ -67,10 +66,10 @@ class Popup
     # Update dialog position
     layout: ->
         [width,height] = [400,105]
-        @frame.css {'top': ($(window).height() - height) / 2 + 'px', 'left':($(window).width() - width) / 2 + 'px', 'width':width + 'px' , 'height':height + 'px' }
+        @frame.css {'top': (jQuery(window).height() - height) / 2 + 'px', 'left':(jQuery(window).width() - width) / 2 + 'px', 'width':width + 'px' , 'height':height + 'px' }
 
     # Encryption password
-    password: -> $('#crypt-key').attr('value')
+    password: -> jQuery('#crypt-key').attr('value')
 
     # Encrypt/decrypt entry point
     run: ->
@@ -178,14 +177,14 @@ class Popup
             skip = 0
             # Text node
             if node.nodeType == 3 and node.data.indexOf( CRYPTO_HEADER ) >= 0
-                elem = $(node.parentNode)
+                elem = jQuery(node.parentNode)
                 skip = found( elem, elem.text() )
             else
                 # Element node
                 if (node.nodeType == 1 && !/(script|style)/i.test(node.tagName))
                     # Text area or input
                     if /(input|textarea)/i.test( node.tagName )
-                        elem = $(node)
+                        elem = jQuery(node)
                         found( elem, elem.val() )
                     else
                         # Recursive traverse children
@@ -199,11 +198,11 @@ class Popup
             body.each -> traverse this
             body.find("iframe").each ->
                 try
-                    traverseBody( $(this).contents().find('body') )
+                    traverseBody( jQuery(this).contents().find('body') )
                 catch e
 
 
-        traverseBody $('body')
+        traverseBody jQuery('body')
     
         return [nodes,texts]
 
@@ -212,21 +211,21 @@ class Popup
     findInput: ->
         # Check for gmail first
         # Plain textarea
-        node = $('#canvas_frame').contents().find('textarea[name=body]:visible')
+        node = jQuery('#canvas_frame').contents().find('textarea[name=body]:visible')
         if node.length then return [node, node.val()]
         # Rich formatting
-        node = $('#canvas_frame').contents().find('iframe.editable').contents().find('body')
+        node = jQuery('#canvas_frame').contents().find('iframe.editable').contents().find('body')
         if node.length then return [node, node.html()]
         # Fail otherways if we on gmail
-        if $('#canvas_frame').length then return [undefined,undefined]
+        if jQuery('#canvas_frame').length then return [undefined,undefined]
         # Outlook web access or own site
-        node = $('textarea[name=txtbdy]')
+        node = jQuery('textarea[name=txtbdy]')
         if node.length == 1 then return [node, node.val()]
         # Return textarea if only one
-        node = $('textarea')
+        node = jQuery('textarea')
         if node.length == 1 then return [node, node.val()]
          # If many textareas, then select focused one
-        if node.length > 1 then node = $('textarea:focus')
+        if node.length > 1 then node = jQuery('textarea:focus')
         if node.length == 1 then return [node, node.val()]
         # Fail finally
         return [undefined,undefined]
@@ -250,16 +249,18 @@ main = ->
         show()
     else
         # Load javascript dependencies
-        scripts = ['jquery.min.js','AES.js','sha1.js','pbkdf2.js','base64.js','utf8.js']
-        count = scripts.length
+        scripts = ['AES.js','sha1.js','pbkdf2.js','base64.js','utf8.js']
+        # Load jQuery if not loaded already
+        if typeof jQuery == "undefined" then scripts.push 'jquery.min.js'
 
-        #if typeof jQuery == "undefined" or jQuery.fn.jquery != '1.4.2'
-        #    scripts.push 'jquery.min.js'
+        count = scripts.length
 
         ready = ->
             count -= 1
             if count == 0
                 window.CRYPT_LOADED =true
+                # Avoid conflicts if jquery is own
+                if 'jquery.min.js' in scripts then $.noConflict()
                 # JQuery focus selector
                 jQuery.expr[':'].focus = ( elem ) -> return elem == document.activeElement && ( elem.type || elem.href )
                 show()
