@@ -102,12 +102,13 @@ class Popup
     # Decrypt text in DOM node
     decryptNode: (node, text, password, callback)->
         hash = text[0...64]
+        hmac = text[0...40]
         salt = text[64...72]
         text = text[72...]
         @derive password, salt, (key) =>
             text = Aes.Ctr.decrypt( text, key, 256 )
-            newHash = Sha256.hash text
-            if hash == newHash
+            # Old version used hash - changed to more secure HMAC in latest
+            if hex_hmac_sha1(key, text ) == hmac or hash == Sha256.hash( text )
                 @updateNode node, text
                 callback( true )
             else
@@ -130,10 +131,13 @@ class Popup
 
     # Encrypt text in input element
     encrypt: (password, callback)->
-        hash = Sha256.hash @text
         salt = Base64.random(8)
         @derive password, salt, (key) =>
-            @updateNode @node, HELP + @dump( hash + salt + Aes.Ctr.encrypt( @text, key, 256) )
+            # Calculate HMAC digest
+            hmac = hex_hmac_sha1(key, @text )
+            # Pad to to 256bit (reserved for sha256 hash)
+            hmac += hmac[0...24]
+            @updateNode @node, HELP + @dump( hmac + salt + Aes.Ctr.encrypt( @text, key, 256) )
             callback( true )
 
     dump: (text) ->
@@ -218,6 +222,9 @@ class Popup
         if node.length then return [node, node.html()]
         # Fail otherways if we on gmail
         if jQuery('#canvas_frame').length then return [undefined,undefined]
+        # Yahoo mail
+        node = jQuery('iframe[name=compArea_test_]').contents().find('body')
+        if node.length then return [node, node.html()]
         # Outlook web access or own site
         node = jQuery('textarea[name=txtbdy]')
         if node.length == 1 then return [node, node.val()]
