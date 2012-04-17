@@ -3,7 +3,7 @@ HOME=$(cd `dirname $0` && pwd)
 DAEMON=encipher.coffee
 USER=encipher
 GROUP=encipher
-NODE=$HOME/node_modules/coffee-script/bin/coffee
+NODE=/home/cloudpub/cloudpub/bin/node
 OPTS="--port=3000 --interface=127.0.0.1"
 
 function start {
@@ -35,15 +35,12 @@ case "$1" in
       stop
       start
     ;;
-  run)
-         $NODE $HOME/$DAEMON $OPTS
-    ;;
   console)
          sudo -u $USER -g $GROUP $NODE $HOME/$DAEMON $OPTS
     ;;
   *)
     # Refuse to do other stuff
-    echo "Usage: $0 {start|stop|restart|console|run}"
+    echo "Usage: $0 {start|stop|restart}"
     exit 1
     ;;
 esac
