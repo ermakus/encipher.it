@@ -101,7 +101,7 @@ block contents
         .articleBody.clear
             p 
               | The bookmark above actually is javascript code that can be injected to any HTML page to perform some task.
-              | The task is display dialog control, encrypt or decrypt focused textarea. We use 
+              | The task is to ask for the string passphrase, generate key, and encrypt or decrypt focused textarea. We use 
               a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") AES 
               | encryption with
               a(href="http://en.wikipedia.org/wiki/PBKDF2", target="new", rel="nofollow") PBKDF2 
@@ -111,5 +111,8 @@ block contents
               | However, because of encryption code still loaded from the server, there is can be 
               a(href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack") man-in-the-middle 
               | attack.
-              | So please check that your HTTPS connection established and certificate is valid.
-              | If you see alert (like red HTTPS on my instruction images), please do not use this tool and send me note!
+              | So please check that your HTTPS connection certificate is valid.
+              | If you see alert (like red HTTPS on my instruction images), please stop use the tool and send me note!
+            p
+              | The source code of this site is available on
+              a(href="https://github.com/ermakus/encipher.it") GitHub

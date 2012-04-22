@@ -9,13 +9,13 @@ CRYPTO_FOOTER="IwEmS"
 HTML_INPUT = ->
     "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%; display: none;' id='crypt-key-plain'/>
      <input type='password' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%;' id='crypt-key-pass'/>
-    <u style='display: block; position: absolute; display: block; top: 10px; right: 6px; color: black;' id='crypt-show-pass' z-index='10000'>Unmask</u>"
+    <u style='cursor: pointer; display: block; position: absolute; display: block; top: 10px; right: 6px; color: black;' id='crypt-show-pass' z-index='10000'>Unmask</u>"
 
 HTML_POPUP = (title, body, action)->
     "<div style='position: fixed; z-index: 9999; background: #355664; border: solid gray 1px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px'>
         <div style='position: absolute; left: 0; right: 0; color: white; margin: 4px; height: 32px;'>
             <b style='padding: 8px; float: left;'>#{title}</b>
-            <img style='border: none; float: right;' id='crypt-close' src='#{BASE_URL}/close.png'/>
+            <img style='border: none; float: right; cursor: pointer;' id='crypt-close' src='#{BASE_URL}/close.png'/>
         </div>
         <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; left: 0; right: 0;'>
             #{body}
