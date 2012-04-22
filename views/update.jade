@@ -1,0 +1,59 @@
+extends layout
+
+block contents
+  .header
+      h1 Encipher.It
+      h2 New version is avaliable
+  #articles.section
+    .article
+      h3 Please update your bookmarklet
+      .line
+      .articleBody.clear
+        .whatsnew
+          p Whats new in version 3?
+          p
+            ul
+              li Input masked by default
+              li Mask/unmask switch added
+              li Password strength meter added
+
+        p 
+            b Firefox or Google Chrome:
+            br
+            span Drag this link: &nbsp;
+            a(href=def_bookmarklet)
+                b Encipher It
+            span &nbsp;&nbsp; to your Bookmarks Bar
+
+        p
+            b Internet Explorer:
+            br
+            span Right click: &nbsp;
+            a(href=def_bookmarklet)
+                b Encipher It
+            span &nbsp; and click "Add to Favorites"
+        p
+            b New bookmarklet is back compatible with old encryptions.
+
+    .article
+      h3 Help us to build better product
+      .line
+      form.articleBody.clear(action="/survey",method="post")
+        p 
+          b Are you interested in downloadable version of this tool with 
+          a(href="http://en.wikipedia.org/wiki/Pretty_Good_Privacy",target="new") PGP 
+          b encryption?
+          select(style="float: right;",name="PGP")
+            option No
+            option Yes
+        p 
+          b How much you able to spent for such tool?
+          select(style="float: right",name="cost")
+            option Nothing
+            option $1
+            option $5
+            option $10
+            option $15
+            option $20
+        p
+          input(type="submit",value="Submit")
