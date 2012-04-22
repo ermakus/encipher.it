@@ -39,7 +39,8 @@ class Popup
                 </div>
                 <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; left: 0; right: 0;'>
                     #{body}
-                    <b style='position: absolute; display: block; left: 4px; bottom: 4px;' id='crypt-message''></b>
+                    <b style='position: absolute; display: block; left: 4px; bottom: 4px;' id='crypt-message''>
+                    <a href='" + BASE_URL + "/update'>New version is available</a></b>
                     <input disabled='true' style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-btn' type='button' value='#{action}'/>
                 </div>
             </div>

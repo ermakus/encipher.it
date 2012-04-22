@@ -41,6 +41,29 @@ app.get '/', (req, res)->
         def_bookmarklet: bookmarklet(3)
     }
 
+app.get '/update', (req, res)->
+    res.render 'update', {
+        title: 'Encipher.it – new version available'
+        bookmarklet: bookmarklet
+        def_bookmarklet: bookmarklet(3)
+    }
+
+app.post '/survey', (req, res)->
+    pgp = req.param('PGP')
+    cost = req.param('cost')
+    mailer.send {
+        'host' : "localhost",
+        'port' : "25",
+        'domain' : "localhost",
+        'to' : "anton@ermak.us",
+        'from' : "nobody@encipher.it",
+        'subject' : "Survey from encipher.it: #{pgp}/#{cost}",
+        'body': "Interested in PGP: #{pgp}\nAble to spent: #{cost}",
+        'username': 'decipher',
+        'authentication': false }, (err)->
+            err and console.log "Send survey error: #{err.message}"
+            res.redirect( "/" )
+
 app.post '/feedback', (req, res)->
     name = req.param('name')
     email = req.param('email')
@@ -56,8 +79,9 @@ app.post '/feedback', (req, res)->
         'subject' : "Feedback from #{name} (encipher.it)",
         'body': message,
         'username': 'decipher',
-        'authentication': false }
-    res.send( "success" )
+        'authentication': false }, (err)->
+            err and console.log "Send feedback error: #{err.message}"
+            res.send( "success" )
 
 if !module.parent
     app.listen(settings.PORT, settings.INTERFACE)

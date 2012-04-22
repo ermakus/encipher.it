@@ -173,6 +173,16 @@ div.figure1{
 	width:320px;
 }
 
+div.whatsnew{
+	background-color: #142830;
+	float:right;
+	height:154px;
+    padding-top: 20px;
+    padding-left: 50px;
+	margin-left:15px;
+	width:320px;
+    font-size: 16px;
+}
 
 div.figure:hover{
 	-moz-box-shadow:0 0 2px #4D7788;
