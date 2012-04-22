@@ -6,44 +6,65 @@ CRYPTO_HEADER="EnCt2"
 
 CRYPTO_FOOTER="IwEmS"
 
+HTML_INPUT = ->
+    "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%; display: none;' id='crypt-key-plain'/>
+     <input type='password' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%;' id='crypt-key-pass'/>
+    <u style='display: block; position: absolute; display: block; top: 10px; right: 6px; color: black;' id='crypt-show-pass' z-index='10000'>Unmask</u>"
+
+HTML_POPUP = (title, body, action)->
+    "<div style='position: fixed; z-index: 9999; background: #355664; border: solid gray 1px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px'>
+        <div style='position: absolute; left: 0; right: 0; color: white; margin: 4px; height: 32px;'>
+            <b style='padding: 8px; float: left;'>#{title}</b>
+            <img style='border: none; float: right;' id='crypt-close' src='#{BASE_URL}/close.png'/>
+        </div>
+        <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; left: 0; right: 0;'>
+            #{body}
+            <b style='position: absolute; display: block; left: 4px; bottom: 4px;' id='crypt-message''></b>
+            <input disabled='true' style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-btn' type='button' value='#{action}'/>
+        </div>
+    </div>"
+
 # Popup dialog
 class Popup
 
     constructor: ->
         @cache = {}
         if @parse()
-            body = "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%;' id='crypt-key'/>"
             if @encrypted
-                @show "Enter decryption key","Decrypt", body
+                @input "Enter decryption key","Decrypt"
             else
                 if @text
-                    @show "Enter encryption key","Encrypt", body
+                    @input "Enter encryption key","Encrypt"
                 else
                     @show "Message is empty","Cancel","Please type the message first"
         else
             @show "Message not found","Cancel","Please select the input area"
 
+
+    input: (title, action) ->
+        @show title, action, HTML_INPUT()
+
+        jQuery('#crypt-show-pass').click =>
+            pass = @password()
+            jQuery('#crypt-key-plain').toggle().val(pass)
+            jQuery('#crypt-key-pass').toggle().val(pass)
+            el = jQuery('#crypt-show-pass')
+            if el.html() == 'Unmask'
+                el.html('Mask')
+            else
+                el.html('Unmask')
+
         # Encrypt handler
-        jQuery('#crypt-key').focus().keyup (e)=>
+        jQuery('#crypt-key-plain,#crypt-key-pass').focus().keyup (e)=>
             enabled = @password() != ''
+            score = @score()
+            jQuery('#crypt-message').html(score)
             jQuery('#crypt-btn').attr('disabled', not enabled )
             if (e.which == 27) then return @hide()
             if (e.which == 13 and enabled) then return @run()
 
     show: (title, action, body) ->
-        @frame = jQuery("
-            <div style='position: fixed; z-index: 9999; background: #355664; border: solid gray 1px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px'>
-                <div style='position: absolute; left: 0; right: 0; color: white; margin: 4px; height: 32px;'>
-                    <b style='padding: 8px; float: left;'>#{title}</b>
-                    <img style='border: none; float: right;' id='crypt-close' src='#{BASE_URL}/close.png'/>
-                </div>
-                <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; left: 0; right: 0;'>
-                    #{body}
-                    <b style='position: absolute; display: block; left: 4px; bottom: 4px;' id='crypt-message''></b>
-                    <input disabled='true' style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-btn' type='button' value='#{action}'/>
-                </div>
-            </div>
-        ")
+        @frame = jQuery( HTML_POPUP(title, body, action))
         jQuery('body').append( @frame )
         if action == "Cancel"
             jQuery('#crypt-btn').attr('disabled',false).click( => @hide() ).keyup( (e)=> if e.which == 27 then @hide() ).focus()
@@ -69,7 +90,28 @@ class Popup
         @frame.css {'top': (jQuery(window).height() - height) / 2 + 'px', 'left':(jQuery(window).width() - width) / 2 + 'px', 'width':width + 'px' , 'height':height + 'px' }
 
     # Encryption password
-    password: -> jQuery('#crypt-key').attr('value')
+    password: ->
+        if jQuery('#crypt-key-plain').is(':visible')
+            jQuery('#crypt-key-plain').attr('value')
+        else
+            jQuery('#crypt-key-pass').attr('value')
+
+    # Key score
+    score: ->
+        value = @password()
+        strength = 1
+        for regexp in [/{5\,}/, /[a-z]+/, /[0-9]+/, /[A-Z]+/]
+            if value.match(regexp)
+                strength++
+        if value.length < 5
+            strength = 1
+        if value.length > 8
+            strength++
+        if value.length > 12
+            strength++
+        if value.length > 16 or strength > 5
+            strength = 5
+        ['<span style="#c11b17">Very weak</span>','Weak','Moderate','Strong','Very strong'][strength-1]
 
     # Encrypt/decrypt entry point
     run: ->
@@ -236,7 +278,7 @@ class Popup
         if node.length == 1 then return [node, node.val()]
         # Fail finally
         return [undefined,undefined]
- 
+
     parse: ->
         [@nodes, @texts] = @findEncrypted()
         [@node,  @text]  = @findInput()

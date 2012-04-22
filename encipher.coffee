@@ -2,8 +2,6 @@ settings = require './settings'
 express  = require 'express'
 mailer   = require 'mailer'
 
-
-
 # Get bookmarklet version
 bookmarklet = (version)->
     if version
@@ -23,7 +21,12 @@ app.configure ->
     app.use(express.bodyParser())
     app.use(express.methodOverride())
     app.use(app.router)
+    app.use require('connect-assets')(buildDir: __dirname + '/public')
 
+    js.root = 'javascripts'
+    js('inject.js')
+    js('inject.v2.js')
+    js('inject.v3.js')
 
 app.configure 'development', ->
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
