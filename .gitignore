@@ -1,0 +1,6 @@
+.gitignore
+node_modules/
+public/javascripts/inject.js
+public/javascripts/inject.v2.js
+public/javascripts/inject.v3.js
+settings.js
