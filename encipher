@@ -3,7 +3,8 @@ HOME=$(cd `dirname $0` && pwd)
 DAEMON=encipher.coffee
 USER=encipher
 GROUP=encipher
-NODE=$HOME/node_modules/coffee-script/bin/coffee
+NODE=/home/cloudpub/cloudpub/bin/node
+COFFEE=$HOME/node_modules/coffee-script/bin/coffee
 OPTS="--port=3000 --interface=127.0.0.1"
 
 function start {
@@ -16,7 +17,7 @@ function start {
         --user  $USER \
         --group $GROUP \
         --chuid $USER \
-        --exec $NODE -- $HOME/$DAEMON $OPTS
+        --exec $NODE -- $COFFEE $HOME/$DAEMON $OPTS
 }
 
 function stop {
@@ -36,7 +37,7 @@ case "$1" in
       start
     ;;
   run)
-         $NODE $HOME/$DAEMON $OPTS
+         $NODE $COFFEE $HOME/$DAEMON $OPTS
     ;;
   console)
          sudo -u $USER -g $GROUP $NODE $HOME/$DAEMON $OPTS
