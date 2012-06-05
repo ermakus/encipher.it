@@ -63,6 +63,9 @@ class Popup
             if (e.which == 27) then return @hide()
             if (e.which == 13 and enabled) then return @run()
 
+        jQuery('#crypt-key-plain').toggle().toggle().val("")
+        jQuery('#crypt-key-pass').toggle().toggle().val("")
+
     show: (title, action, body) ->
         @frame = jQuery( HTML_POPUP(title, body, action))
         jQuery('body').append( @frame )
