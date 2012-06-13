@@ -1,0 +1,38 @@
+extends layout
+
+block contents
+  .header
+      h1 Encipher.It
+      h2 How to add bookmarklet on iPhone/iPad
+  #articles.section
+    .article
+          ol
+            li
+              b
+                a(href='##{def_bookmarklet}',onclick='document.title="Encipher.It"') Tap here 
+              span  - this will change page title and append bookmarklet into address bar
+            li
+              span Tap the '+' button at the bottom of the screen
+            li
+              span Select 
+              b Add Bookmark
+            li
+              span Tap 
+              strong Save
+            li
+              span Tap the Bookmarks button at the bottom of the screen
+            li
+              span Locate just created 
+              b Encipher.It 
+              span bookmark in the list.
+            li
+              span Tap 
+              b Edit 
+              span and then tap on the bookmark
+            li
+              span Tap in the second field (it begins with 'http').
+              span You want to edit the beginning of this text, so tap and drag the loupe all the way to the left.
+            li
+              span Place the editing point between the "#" and the "j" then delete all to the beginning of the line
+            li
+              span When you are done, your bookmark should begin from 'javascript' string. Well done! Thanks Apple for awesome usability!

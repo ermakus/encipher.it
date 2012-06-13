@@ -48,6 +48,13 @@ app.get '/update', (req, res)->
         def_bookmarklet: bookmarklet(3)
     }
 
+app.get '/ios', (req, res)->
+    res.render 'ios', {
+        title: 'Encipher.it – How to add bookmarklet on iOS'
+        bookmarklet: bookmarklet
+        def_bookmarklet: bookmarklet(3)
+    }
+
 app.post '/survey', (req, res)->
     pgp = req.param('PGP')
     cost = req.param('cost')
