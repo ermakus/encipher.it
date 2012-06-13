@@ -69,7 +69,7 @@ app.post '/survey', (req, res)->
         'username': 'decipher',
         'authentication': false }, (err)->
             err and console.log "Send survey error: #{err.message}"
-            res.redirect( "/" )
+            res.redirect( settings.BASE_URL )
 
 app.post '/feedback', (req, res)->
     name = req.param('name')
