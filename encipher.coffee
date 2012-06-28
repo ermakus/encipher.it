@@ -2,14 +2,19 @@ settings = require './settings'
 express  = require 'express'
 mailer   = require 'mailer'
 
-# Get bookmarklet version
-bookmarklet = (version)->
+# JS code to inject in page
+bookmarklet_code = (version)->
     if version
         version = ".v#{version}"
     else
         version = ""
-    return "javascript:(function(){document.body.appendChild(document.createElement('script'))" + 
+    return "(function(){document.body.appendChild(document.createElement('script'))" + 
            ".src='#{settings.BASE_URL}/javascripts/inject#{version}.js';})();"
+
+# Bookmarklet link
+bookmarklet = (version)->
+    return "javascript:" + bookmarklet_code(version)
+
 
 app = module.exports = express.createServer()
 
@@ -27,6 +32,7 @@ app.configure ->
     js('inject.js')
     js('inject.v2.js')
     js('inject.v3.js')
+    js('inject.vios.js')
 
 app.configure 'development', ->
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
