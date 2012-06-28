@@ -8,13 +8,32 @@ block contents
       .nav.clear
           ul
               li
-                  a(href="#try") Try It Now
+                  a(href="#video") Tutorial
               li
                   iframe(src="https://www.facebook.com/plugins/like.php?href=http://encipher.it&layout=button_count&show_faces=false&width=80&action=like&font=lucida+grande&colorscheme=light", allowtransparency="true", style="border: medium none; overflow: hidden; width: 80px; height: 21px; padding-left: 20px; margin-top: 12px;", frameborder="0", scrolling="no")
 
   #articles.section
+    #try.article
+        .articleBody.clear
+            p
+                | Use this text box to encrypt and decrypt messages. Copy and paste text, then click
+                a(href=def_bookmarklet)
+                    b Encipher It
+            p
+                | Please look at 
+                a(href="#video") video tutorial 
+                | to learn how to use it with google mail or facebook.
+            p
+                textarea#txt(name="txtbdy")
+
+            p
+                | This application use 
+                a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") Advanced Encryption Standard 
+                | algorithm to protect your data. All encoding and decoding is performed by local computer.
+                a(href="#how") How it works
+
     .line
-    .article
+    #video.article
         h3 In-browser solution to encrypt text messages by&nbsp;
           a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") Advanced Encryption Standard (AES)
         center
@@ -47,9 +66,13 @@ block contents
             p
                 b Apple Devices
                 br
-                span This is a little tricky, due to iOS limitations. See 
-                a(href="/ios") instruction
+                a(href="/ios") Please use iOS version
 
+            p
+                span If you need to decode text from the first version, use&nbsp;
+                a(href=bookmarklet(0))
+                    b this
+                span &nbsp;bookmarklet.
     .article
         h2 2. Encrypt message
         .line 
@@ -73,30 +96,8 @@ block contents
                 img(src="/images/step3.png", width="500")
             p To decrypt the message on the page, just click bookmark again and reenter the same password.
 
-    #try.article
-        h2 Try it
-        .line 
-        .articleBody.clear
-            p
-                span You can use this text box to encrypt and decrypt messages
-            p
-                span Copy and paste text, then click 
-                a(href=def_bookmarklet)
-                    b Encipher It
-            p
-                textarea#txt(name="txtbdy")
 
-            p
-                span We use 
-                a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") Advanced Encryption Standard 
-                span algorithm to protect data. All encoding/decoding is performed in your computer memory.
-            p
-                span If you need to decode text from the old version, use&nbsp;
-                a(href=bookmarklet(0))
-                    b this
-                span &nbsp;bookmarklet.
-
-    .article
+    #how.article
         h2 How It Works
         .line 
         .articleBody.clear

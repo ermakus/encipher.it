@@ -50,9 +50,10 @@ app.get '/update', (req, res)->
 
 app.get '/ios', (req, res)->
     res.render 'ios', {
-        title: 'Encipher.it – How to add bookmarklet on iOS'
+        title: 'Encipher.it - iOS version'
         bookmarklet: bookmarklet
         def_bookmarklet: bookmarklet(3)
+        layout: false
     }
 
 app.post '/survey', (req, res)->
