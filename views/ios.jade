@@ -92,7 +92,6 @@ html(xmlns='http://www.w3.org/1999/xhtml')
     #wrap
       #main
         .header
-          a.left(href='#') Help
           h1.title Encipher It
           a.right(href='/') Feedback
         .content
@@ -101,15 +100,13 @@ html(xmlns='http://www.w3.org/1999/xhtml')
             input.button.red(type='submit', value='Encipher It')
       #sidebar
         .header
-          p.title Help
+          p.title Instruction
         .content
-          ul.nav
-            li
-              a(href="https://encipher.it") Instruction
           p
             a(href="/") Encipher.it
             |  is a free snippet of code that you can store in your browser bookmarks to encrypt email, or any block of text you enter on a website.
-            | You can also use this text box to process text from the clipboard. Visit site for the video tutorial.
+            | You can also use this page to process text from the clipboard. Visit site for the 
+            a(href="/#video") video tutorial.
           ul.nav
             li
               a(href="#") How To Install

@@ -4,11 +4,13 @@ block contents
   .header
       h1 Encipher.It
       h3
-          span Encipher.it – encrypt gmail or facebook in one click
+          span Encipher.it – encrypt email in one click
       .nav.clear
           ul
               li
                   a(href="#video") Tutorial
+              li
+                  a(href="/ios") iPhone
               li
                   iframe(src="https://www.facebook.com/plugins/like.php?href=http://encipher.it&layout=button_count&show_faces=false&width=80&action=like&font=lucida+grande&colorscheme=light", allowtransparency="true", style="border: medium none; overflow: hidden; width: 80px; height: 21px; padding-left: 20px; margin-top: 12px;", frameborder="0", scrolling="no")
 
@@ -22,15 +24,23 @@ block contents
             p
                 | Please look at 
                 a(href="#video") video tutorial 
-                | to learn how to use it with google mail or facebook.
+                | to learn how to use this with google mail or facebook 
             p
-                textarea#txt(name="txtbdy")
+                textarea#txt(name="txtbdy") Sample text
 
             p
                 | This application use 
                 a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") Advanced Encryption Standard 
                 | algorithm to protect your data. All encoding and decoding is performed by local computer.
-                a(href="#how") How it works
+                a(href="#how") How it works?
+
+        script
+          $('#txt').click( function() {
+            if($(this).val() == 'Sample text') {
+              $(this).val("");
+              $(this).unbind();
+            }
+          });
 
     .line
     #video.article
