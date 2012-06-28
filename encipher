@@ -1,5 +1,5 @@
 #!/bin/bash
-HOME=$(cd `dirname $0` && pwd)
+HOME=/home/encipher/encipher
 DAEMON=encipher.coffee
 USER=encipher
 GROUP=encipher
@@ -12,7 +12,7 @@ function start {
     /sbin/start-stop-daemon --start \
         --background \
 	--make-pidfile \
-        --pidfile /tmp/multiplay.pid \
+        --pidfile /var/run/encipher.pid \
         --chdir $HOME \
         --user  $USER \
         --group $GROUP \
@@ -22,7 +22,7 @@ function start {
 
 function stop {
     echo "Stopping $DAEMON"
-    /sbin/start-stop-daemon --stop --pidfile /tmp/multiplay.pid --verbose
+    /sbin/start-stop-daemon --stop --pidfile /var/run/encipher.pid --verbose
 }
 
 case "$1" in
