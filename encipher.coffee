@@ -8,8 +8,7 @@ bookmarklet_code = (version)->
         version = ".v#{version}"
     else
         version = ""
-    return "(function(){document.body.appendChild(document.createElement('script'))" + 
-           ".src='#{settings.BASE_URL}/javascripts/inject#{version}.js';})"
+    return "(function(){var s=document.createElement('script');s.setAttribute('src','#{settings.BASE_URL}/javascripts/inject#{version}.js');s.setAttribute('type','text/javascript');document.getElementsByTagName('head')[0].appendChild(s);})"
 
 # Bookmarklet link
 bookmarklet = (version)->

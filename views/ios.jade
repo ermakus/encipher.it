@@ -11,7 +11,10 @@ html(xmlns='http://www.w3.org/1999/xhtml')
     link(rel='stylesheet', href='/stylesheets/ios.css')
     script(type='text/javascript', src='/javascripts/jquery.min.js')
     script
-      var encipher_it = #{def_code};
+      var encipher_it = function() {
+        alert("Call");
+        #{def_code}();
+      }
 
       $(document).ready( function() {
         var txtdef = "Sample text";
@@ -20,6 +23,9 @@ html(xmlns='http://www.w3.org/1999/xhtml')
           if( txtbdy.val() == txtdef ) {
             txtbdy.val("").unbind();
           };
+        });
+        $('a.right').click( function() {
+            txtbdy.val("").unbind();
         });
       });
     script
@@ -35,8 +41,9 @@ html(xmlns='http://www.w3.org/1999/xhtml')
     #wrap
       #main
         .header
+          a.left(href='/#video') Tutorial
           h1.title Encipher It
-          a.right(href='/') Feedback
+          a.right(href='#') Clear
         .content
           textarea#txtbdy(name="text")
           p
