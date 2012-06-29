@@ -11,6 +11,18 @@ html(xmlns='http://www.w3.org/1999/xhtml')
     link(rel='stylesheet', href='/stylesheets/ios.css')
     script(type='text/javascript', src='/javascripts/jquery.min.js')
     script
+      var encipher_it = #{def_code};
+
+      $(document).ready( function() {
+        var txtdef = "Sample text";
+        var txtbdy = $('#txtbdy').val(txtdef);
+        txtbdy.click( function() {
+          if( txtbdy.val() == txtdef ) {
+            txtbdy.val("").unbind();
+          };
+        });
+      });
+    script
         var _gaq = _gaq || [];
         _gaq.push(['_setAccount', 'UA-17946320-4']);
         _gaq.push(['_trackPageview']);
@@ -26,9 +38,9 @@ html(xmlns='http://www.w3.org/1999/xhtml')
           h1.title Encipher It
           a.right(href='/') Feedback
         .content
-          textarea(name="text")
+          textarea#txtbdy(name="text")
           p
-            a.button(href=def_bookmarklet) Encipher It
+            a.button(href="#", onclick="encipher_it()") Encipher It
       #sidebar
         .header
           p.title Instruction

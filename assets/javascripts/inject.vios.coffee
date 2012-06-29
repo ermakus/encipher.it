@@ -9,18 +9,18 @@ CRYPTO_FOOTER="IwEmS"
 HTML_INPUT = ->
     "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%; display: none;' id='crypt-key-plain'/>
      <input type='password' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%;' id='crypt-key-pass'/>
-    <u style='cursor: pointer; display: block; position: absolute; display: block; top: 10px; right: 6px; color: black;' id='crypt-show-pass' z-index='10000'>Unmask</u>"
+    <u style='cursor: pointer; font-size: 14px; display: block; position: absolute; display: block; top: 10px; right: 16px; color: black;' id='crypt-show-pass' z-index='10000'>Unmask</u>"
 
 HTML_POPUP = (title, body, action)->
-    "<div style='position: fixed; z-index: 9999; background: #D9DCE0; border: 1px solid #E7EAED;'>
-        <div style='position: absolute; left: 0; right: 0; color: white; margin: 4px; height: 32px;'>
+    "<div style='position: fixed; z-index: 9999; background: #D9DCE0; border: 1px solid black; color: black; font-size: 14px; text-shadow: 0 1px 1px #CCC;'>
+        <div style='position: absolute; left: 0; right: 0; color: black; margin: 4px; height: 32px;'>
             <b style='padding: 8px; float: left;'>#{title}</b>
             <img style='border: none; float: right; cursor: pointer;' id='crypt-close' src='#{BASE_URL}/close-new.png'/>
         </div>
         <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; left: 0; right: 0;'>
             #{body}
             <b style='position: absolute; display: block; left: 4px; bottom: 4px;' id='crypt-message''></b>
-            <input disabled='true' style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-btn' type='button' value='#{action}'/>
+            <input disabled='true' style='position: absolute; display: block; right: 4px; bottom: 4px; height: 25px;' id='crypt-btn' type='button' value='#{action}'/>
         </div>
     </div>"
 
@@ -91,7 +91,7 @@ class Popup
     layout: ->
         height = 105
         width = jQuery(window).width() / 3
-        if width < 100
+        if width < 400
             width = width * 3 - 20
         @frame.css {'top': (jQuery(window).height() - height) / 2 + 'px', 'left':(jQuery(window).width() - width) / 2 + 'px', 'width':width + 'px' , 'height':height + 'px' }
 

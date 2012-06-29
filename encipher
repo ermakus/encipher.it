@@ -1,11 +1,16 @@
 #!/bin/bash
 HOME=/home/encipher/encipher
+if [ ! -d $HOME ] ; then
+    echo "Home $HOME not found - $PWD used"
+    HOME=$PWD
+fi
 DAEMON=encipher.coffee
 USER=encipher
 GROUP=encipher
 NODE=/home/cloudpub/cloudpub/bin/node
 COFFEE=$HOME/node_modules/coffee-script/bin/coffee
 OPTS="--port=3000 --interface=127.0.0.1"
+
 
 function start {
     echo "Starting $DAEMON (home: $HOME)"

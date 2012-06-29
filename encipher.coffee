@@ -9,11 +9,11 @@ bookmarklet_code = (version)->
     else
         version = ""
     return "(function(){document.body.appendChild(document.createElement('script'))" + 
-           ".src='#{settings.BASE_URL}/javascripts/inject#{version}.js';})();"
+           ".src='#{settings.BASE_URL}/javascripts/inject#{version}.js';})"
 
 # Bookmarklet link
 bookmarklet = (version)->
-    return "javascript:" + bookmarklet_code(version)
+    return "javascript:" + bookmarklet_code(version) + "();"
 
 
 app = module.exports = express.createServer()
@@ -57,8 +57,8 @@ app.get '/update', (req, res)->
 app.get '/ios', (req, res)->
     res.render 'ios', {
         title: 'Encipher.it - iOS version'
-        bookmarklet: bookmarklet
-        def_bookmarklet: bookmarklet(3)
+        def_bookmarklet: bookmarklet('ios')
+        def_code: bookmarklet_code('ios')
         layout: false
     }
 
