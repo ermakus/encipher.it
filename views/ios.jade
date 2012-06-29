@@ -11,10 +11,7 @@ html(xmlns='http://www.w3.org/1999/xhtml')
     link(rel='stylesheet', href='/stylesheets/ios.css')
     script(type='text/javascript', src='/javascripts/jquery.min.js')
     script
-      var encipher_it = function() {
-        alert("Call");
-        #{def_code}();
-      }
+      var encipher_it = #{def_code};
 
       $(document).ready( function() {
         var txtdef = "Sample text";

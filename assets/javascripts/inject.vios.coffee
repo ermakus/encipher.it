@@ -7,8 +7,8 @@ CRYPTO_HEADER="EnCt2"
 CRYPTO_FOOTER="IwEmS"
 
 HTML_INPUT = ->
-    "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%; display: none;' id='crypt-key-plain'/>
-     <input type='password' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%;' id='crypt-key-pass'/>
+    "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; display: none;' id='crypt-key-plain'/>
+     <input type='password' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px;' id='crypt-key-pass'/>
     <u style='cursor: pointer; font-size: 14px; display: block; position: absolute; display: block; top: 10px; right: 16px; color: black;' id='crypt-show-pass' z-index='10000'>Unmask</u>"
 
 HTML_POPUP = (title, body, action)->
