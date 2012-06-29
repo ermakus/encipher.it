@@ -1,0 +1,17 @@
+CACHE MANIFEST
+# Cache manifest version 0.0.1
+/ios
+/stylesheets/ios.css
+/javascripts/jquery.min.js
+/javascripts/inject.vios.js
+/javascripts/AES.js
+/javascripts/sha1.js
+/javascripts/pbkdf2.js
+/javascripts/base64.js
+/javascripts/utf8.js
+/close-new.png
+
+NETWORK:
+http://www.google-analytics.com/
+https://www.google-analytics.com/
+https://encipher.it/update/
