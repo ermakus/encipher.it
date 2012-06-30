@@ -43,12 +43,13 @@ app.configure 'production', ->
 app.get '/', (req, res)->
     agent = req.headers["user-agent"] or "Unknown"
     if agent.match(/iPad/) or agent.match(/iPhone/)
-        return res.redirect '/ios'
-    res.render 'index', {
-        title: 'Encipher.it – encrypt email in one click'
-        bookmarklet: bookmarklet
-        def_bookmarklet: bookmarklet(3)
-    }
+        return res.redirect settings.BASE_URL + '/ios'
+    else
+        res.render 'index', {
+            title: 'Encipher.it – encrypt email in one click'
+            bookmarklet: bookmarklet
+            def_bookmarklet: bookmarklet(3)
+        }
 
 app.get '/update', (req, res)->
     res.render 'update', {
