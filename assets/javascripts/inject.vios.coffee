@@ -90,8 +90,8 @@ class Popup
     # Update dialog position
     layout: ->
         height = 105
-        width = jQuery(window).width() / 3
-        if width < 100
+        width = jQuery(window).width() / 2
+        if width < 300
             width = (width * 3 - 20)
         @frame.css {'top': (jQuery(window).height() - height) / 2 + 'px', 'left':(jQuery(window).width() - width) / 2 + 'px', 'width':width + 'px' , 'height':height + 'px' }
 
