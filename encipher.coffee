@@ -41,6 +41,9 @@ app.configure 'production', ->
     app.use(express.errorHandler())
 
 app.get '/', (req, res)->
+    agent = req.headers["user-agent"] or "Unknown"
+    if agent.match(/iPad/) or agent.match(/iPhone/)
+        return res.redirect '/ios'
     res.render 'index', {
         title: 'Encipher.it – encrypt email in one click'
         bookmarklet: bookmarklet

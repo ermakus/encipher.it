@@ -12,7 +12,7 @@ HTML_INPUT = ->
     <u style='cursor: pointer; font-size: 14px; display: block; position: absolute; display: block; top: 10px; right: 16px; color: black;' id='crypt-show-pass' z-index='10000'>Unmask</u>"
 
 HTML_POPUP = (title, body, action)->
-    "<div style='position: fixed; z-index: 9999; background: #D9DCE0; border: 1px solid black; color: black; font-size: 14px; text-shadow: 0 1px 1px #CCC;'>
+    "<div style='position: fixed; z-index: 9999; background: #D9DCE0; border-radius: 10px; border: 1px solid black; color: black; font-size: 14px; text-shadow: 0 1px 1px #CCC;'>
         <div style='position: absolute; left: 0; right: 0; color: black; margin: 4px; height: 32px;'>
             <b style='padding: 8px; float: left;'>#{title}</b>
             <img style='border: none; float: right; cursor: pointer;' id='crypt-close' src='#{BASE_URL}/close-new.png'/>
@@ -91,8 +91,8 @@ class Popup
     layout: ->
         height = 105
         width = jQuery(window).width() / 3
-        if width < 400
-            width = width * 3 - 20
+        if width < 100
+            width = (width * 3 - 20)
         @frame.css {'top': (jQuery(window).height() - height) / 2 + 'px', 'left':(jQuery(window).width() - width) / 2 + 'px', 'width':width + 'px' , 'height':height + 'px' }
 
     # Encryption password

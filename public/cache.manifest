@@ -1,8 +1,9 @@
 CACHE MANIFEST
-# Cache manifest version 0.0.1
+# Cache manifest version 2
 /ios
 /stylesheets/ios.css
 /javascripts/jquery.min.js
+/javascripts/iscroll-lite.js
 /javascripts/inject.vios.js
 /javascripts/AES.js
 /javascripts/sha1.js
@@ -12,6 +13,6 @@ CACHE MANIFEST
 /close-new.png
 
 NETWORK:
-http://www.google-analytics.com/
+#http://www.google-analytics.com/
 https://www.google-analytics.com/
 https://encipher.it/update/

@@ -3,18 +3,17 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 strong,.strong {font-weight:bold;}
 .center {text-align:center;}
 /* Shared classes */
-.header {background: #aeb2be; /* Old browsers */background: -moz-linear-gradient(top, #ffffff 0%, #aeb2be 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#aeb2be)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #ffffff 0%,#aeb2be 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, #ffffff 0%,#aeb2be 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top, #ffffff 0%,#aeb2be 100%); /* IE10+ */background: linear-gradient(top, #ffffff 0%,#aeb2be 100%); /* W3C */filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#aeb2be',GradientType=0 ); /* IE6-9 */
+.header {z-index: 10; background: #aeb2be; /* Old browsers */background: -moz-linear-gradient(top, #ffffff 0%, #aeb2be 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#aeb2be)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #ffffff 0%,#aeb2be 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, #ffffff 0%,#aeb2be 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top, #ffffff 0%,#aeb2be 100%); /* IE10+ */background: linear-gradient(top, #ffffff 0%,#aeb2be 100%); /* W3C */filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#aeb2be',GradientType=0 ); /* IE6-9 */
 border-bottom:1px solid #000;height:43px;position:fixed;text-align:center;top:0;left:0;}
 .header .title {color:#71787F;font-size:18px;font-weight:bold;margin-top:10px;text-shadow:0 1px 1px #fff;}
 /* Structure */
-html, #wrap {background:#d8dae0;font: 16px normal Helvetica,sans-serif;-webkit-user-select: none; height: 100%; }
-#main {background:#d8dae0;height:100%;padding:63px 20px 20px 320px;position:relative;vertical-align:top;}
+html, #wrap {background:#d8dae0;font: 16px normal Helvetica,sans-serif;-webkit-user-select: none; }
+#main {background:#d8dae0;padding:63px 20px 20px 320px;position:relative;vertical-align:top;}
 #main .header {padding-left:155px;width:100%;}
-#main .header .left,
-#main .header .right {background: #7A8091; /* Old browsers */background: -moz-linear-gradient(top, #999999 0%, #333333 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#999999), color-stop(100%,#333333)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #999999 0%,#333333 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, #999999 0%,#333333 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top, #999999 0%,#333333 100%); /* IE10+ */background: linear-gradient(top, #999999 0%,#333333 100%); /* W3C */filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#999999', endColorstr='#333333',GradientType=0 ); /* IE6-9 */
+.left, .right {color: white; background: #7A8091; /* Old browsers */background: -moz-linear-gradient(top, #999999 0%, #333333 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#999999), color-stop(100%,#333333)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #999999 0%,#333333 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, #999999 0%,#333333 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top, #999999 0%,#333333 100%); /* IE10+ */background: linear-gradient(top, #999999 0%,#333333 100%); /* W3C */filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#999999', endColorstr='#333333',GradientType=0 ); /* IE6-9 */
 color: #fff;border-radius: 5px;border: 1px solid #6d6d6d;font-size: 12px;left: 310px;position: fixed;top: 9px;padding: 5px 8px;text-decoration:none;}
 #main .header .title {}
-#main .header .right {right: 10px;left: auto;}
+.right {right: 10px; left: auto;}
 #main .content {  }
 #main .content>:first-child {margin-top:0 !important;}
 #main .content .title {font-size:18px;font-weight:bold;margin:20px 0 10px;}
@@ -43,8 +42,8 @@ a {color:#0085d5;text-decoration:none;-webkit-touch-callout: none;}
 #main .content p select {margin-right:15px;}
 #main .content .button { display: block; text-align: center; width: 50%; color:#fff;cursor:pointer;border:1px solid #999;border-radius: 5px;font-size:16px;padding: 8px;margin: 0 auto; background: blue; background: #7A8091; /* Old browsers */background: -moz-linear-gradient(top, #999999 0%, #333333 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#999999), color-stop(100%,#333333)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #999999 0%,#333333 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, #999999 0%,#333333 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top, #999999 0%,#333333 100%); /* IE10+ */background: linear-gradient(top, #999999 0%,#333333 100%); /* W3C */filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#999999', endColorstr='#333333',GradientType=0 ); /* IE6-9 */ }
 
-#sidebar {background:#BCBEC4;border-right:1px solid #000;height:100%;left:0;position:fixed;top:0;vertical-align:top;width:300px;z-index:1;}
-#sidebar .header {width:300px;}
+#sidebar {background:#BCBEC4;border-right:1px solid #000;left:0;position:fixed;top:0;vertical-align:top;width:300px;z-index:1;}
+#sidebar .header {width:100%;}
 #sidebar .header .title {}
 #sidebar .content {padding: 43px 0 20px 0;}
 #sidebar .content .nav {}
@@ -61,7 +60,8 @@ border-top:1px solid #015DE6;color:#fff;text-shadow:0 1px 1px #333;}
 #sidebar {overflow:scroll;} /* Sidebar is only scrollable in portable devices, you can change that */
 }
 .help li { padding: 5px; }
-textarea { height: 480px; width: 100%; }
+#help, #back { display: none; }
+textarea { height: 480px; width: 100%; font-size: 16px; }
 /* iPhone */
 @media only screen and (max-width: 768px) {
 textarea { height: 200px !important; width: 100%; }
@@ -73,5 +73,6 @@ textarea { height: 200px !important; width: 100%; }
 #main .content p input[type=text],
 #main .content p input[type=password],
 #main .content p select {width:60%;}
+#help, #back {display: block !important;}
 }
 

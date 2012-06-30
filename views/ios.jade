@@ -3,17 +3,19 @@ html(xmlns='http://www.w3.org/1999/xhtml', manifest="/cache.manifest")
   head
     meta(http-equiv='Content-Type', content='text/html; charset=UTF-8')
     title= title
-    meta(name='viewport', content='width=device-width, initial-scale=1.0, maximum-scale=1.0')
+    meta(name='viewport', content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable: no;')
     meta(name='apple-mobile-web-app-capable', content='yes')
     meta(name="apple-mobile-web-app-status-bar-style", content="black-translucent")
     link(rel='apple-touch-icon', href='/favicon.png')
     link(rel='shortcut icon', href='/favicon.ico')
     link(rel='stylesheet', href='/stylesheets/ios.css')
     script(type='text/javascript', src='/javascripts/jquery.min.js')
+    script(type='text/javascript', src='/javascripts/iscroll-lite.js')
     script
       var encipher_it = #{def_code};
 
       $(document).ready( function() {
+        var helpScroll = new iScroll('wrapper');
         var txtdef = "Sample text";
         var txtbdy = $('#txtbdy').val(txtdef);
         txtbdy.click( function() {
@@ -21,9 +23,18 @@ html(xmlns='http://www.w3.org/1999/xhtml', manifest="/cache.manifest")
             txtbdy.val("").unbind();
           };
         });
-        $('a.right').click( function() {
+        $('#clear').click( function() {
             txtbdy.val("").unbind();
         });
+        $('#help').click( function() {
+            $('#main').hide();
+            $('#sidebar').show().css({"width":"100%"});
+        });
+        $('#back').click( function() {
+            $('#main').show();
+            $('#sidebar').hide();
+        });
+
       });
     script
         var _gaq = _gaq || [];
@@ -38,56 +49,59 @@ html(xmlns='http://www.w3.org/1999/xhtml', manifest="/cache.manifest")
     #wrap
       #main
         .header
-          a.left(href='/#video') Tutorial
+          a.left#help(href='#') Help
           h1.title Encipher It
-          a.right(href='#') Clear
+          a.right#clear(href='#') Clear
         .content
-          textarea#txtbdy(name="text")
+          textarea.box-white#txtbdy(name="text")
           p
             a.button(href="#", onclick="encipher_it()") Encipher It
       #sidebar
         .header
-          p.title Instruction
-        .content
-          p
-            a(href="/") Encipher.it
-            |  is a free snippet of code that you can store in your browser bookmarks to encrypt email, or any block of text you enter on a website.
-            | You can also use this page to process text from the clipboard. Visit site for the 
-            a(href="/#video") video tutorial.
-          ul.nav
-            li
-              a(href="#") How To Install
-          p
-            | You can add this page to your iphone or ipad Home screen (use safari menu) and then encrypt and decrypt messages without internet access.
-          ul.nav
-            li
-              a(href="#") How To Add Bookmarklet
-          p
-            This is a little bit tricky on apple devices, due to iOS limitations.
-          p
-            b
-              a(href='##{def_bookmarklet}',onclick='document.title="Encipher.It"') Tap here 
-            span  - this will change page title and append bookmarklet into address bar
-          p
-            span Select 
-            b Add Bookmark
-          p
-            span Tap 
-            strong Save
-          p
-            span Tap the Bookmarks button
-          p
-            span Locate just created 
-            b Encipher.It 
-            span bookmark in the list.
-          p
-            span Tap 
-            b Edit 
-            span and then tap on the bookmark
-          p
-            span Tap in the second field (it begins with 'http').
-            span You want to edit the beginning of this text, so tap and drag the loupe all the way to the left.
-          p
-            span Place the editing point between the "#" and the "j" then delete all to the beginning of the line
-          p
-            span When you are done, your bookmark should begin from 'javascript' string. Save and use!
+          h1.title Instruction
+          a.right#back(href='#') Back
+        .content#wrapper
+          div
+            ul.nav
+              li
+                a(href="#") How To Install
+            p
+              | You can add this page to your iphone or ipad Home screen (use safari menu) and then encrypt and decrypt messages without internet access.
+            ul.nav
+              li
+                a(href="#") How To Add Bookmarklet
+            p
+              a(href=def_bookmarklet) Encipher.it
+              |  bookmarklet is a snippet of code that you can store in your browser bookmarks to encrypt email, or any block of text you enter on a website.
+              | Visit site for the 
+              a(href="/#video") video tutorial.
+            p 
+              | Adding bookmarklet is a little bit tricky on apple devices, due to iOS limitations.
+              | To do this, please follow the next steps:
+            p
+              b
+                a(href='##{def_bookmarklet}',onclick='document.title="Encipher.It"') Tap here 
+              span  - this will change page title and append bookmarklet into address bar
+            p
+              span Select 
+              b Add Bookmark
+            p
+              span Tap 
+              strong Save
+            p
+              span Tap the Bookmarks button
+            p
+              span Locate just created 
+              b Encipher.It 
+              span bookmark in the list.
+            p
+              span Tap 
+              b Edit 
+              span and then tap on the bookmark
+            p
+              span Tap in the second field (it begins with 'http').
+              span You want to edit the beginning of this text, so tap and drag the loupe all the way to the left.
+            p
+              span Place the editing point between the "#" and the "j" then delete all to the beginning of the line
+            p
+              span When you are done, your bookmark should begin from 'javascript' string. Save and use!
