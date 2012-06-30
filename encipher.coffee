@@ -42,7 +42,7 @@ app.configure 'production', ->
 
 app.get '/', (req, res)->
     agent = req.headers["user-agent"] or "Unknown"
-    if agent.match(/iPad/) or agent.match(/iPhone/)
+    if false #agent.match(/iPad/) or agent.match(/iPhone/)
         return res.redirect settings.BASE_URL + '/ios'
     else
         res.render 'index', {
