@@ -91,8 +91,8 @@ class Popup
     layout: ->
         height = 105
         width = jQuery(window).width() / 2
-        if width < 300
-            width = (width * 3 - 20)
+        if width < 350
+            width = (width * 2 - 20)
         @frame.css {'top': (jQuery(window).height() - height) / 2 + 'px', 'left':(jQuery(window).width() - width) / 2 + 'px', 'width':width + 'px' , 'height':height + 'px' }
 
     # Encryption password
