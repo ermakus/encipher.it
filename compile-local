@@ -3,4 +3,4 @@ echo "Configure and deploy"
 set +e
 coffee -c -o ./public/javascripts ./assets/javascripts/inject*.coffee
 coffee -c ./settings.coffee
-coffee patch.coffee ./settings.js ./public/javascripts/inject.js ./public/javascripts/inject.v2.js ./public/javascripts/inject.v3.js ./public/javascripts/inject.vios.js http://local.encipher.it
+coffee patch.coffee ./settings.js ./public/javascripts/inject.js ./public/javascripts/inject.v2.js ./public/javascripts/inject.v3.js ./public/javascripts/inject.vios.js http://localhost:3000

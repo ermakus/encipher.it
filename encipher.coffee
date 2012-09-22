@@ -8,7 +8,7 @@ bookmarklet_code = (version)->
         version = ".v#{version}"
     else
         version = ""
-    return "(function(){document.body.appendChild(document.createElement('script'))" + 
+    return "(function(){document.body.appendChild(document.createElement('script'))" +
            ".src='#{settings.BASE_URL}/javascripts/inject#{version}.js';})"
 
 # Bookmarklet link
@@ -16,7 +16,7 @@ bookmarklet = (version)->
     return "javascript:" + bookmarklet_code(version) + "();"
 
 
-app = module.exports = express.createServer()
+app = module.exports = express()
 
 app.configure ->
     app.set('views', __dirname + '/views')
@@ -32,6 +32,7 @@ app.configure ->
     js('inject.js')
     js('inject.v2.js')
     js('inject.v3.js')
+    js('inject.v4.js')
     js('inject.vios.js')
 
 app.configure 'development', ->
@@ -48,7 +49,7 @@ app.get '/', (req, res)->
         res.render 'index', {
             title: 'Encipher.it – encrypt email in one click'
             bookmarklet: bookmarklet
-            def_bookmarklet: bookmarklet(3)
+            def_bookmarklet: bookmarklet(4)
         }
 
 app.get '/update', (req, res)->
@@ -101,6 +102,5 @@ app.post '/feedback', (req, res)->
             err and console.log "Send feedback error: #{err.message}"
             res.send( "success" )
 
-if !module.parent
-    app.listen(settings.PORT, settings.INTERFACE)
-    console.log("Express server listening on port %d", settings.PORT)
+app.listen(settings.PORT, settings.INTERFACE)
+console.log("Express server listening on port %d", settings.PORT)
