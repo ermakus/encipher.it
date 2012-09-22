@@ -50,7 +50,17 @@ app.get '/', (req, res)->
             title: 'Encipher.it – encrypt email in one click'
             bookmarklet: bookmarklet
             def_bookmarklet: bookmarklet(4)
+            def_code: bookmarklet_code(4)
+            crypto: "Sample text"
         }
+
+app.get '/help', (req, res)->
+    res.render 'help', {
+        title: 'Encipher.it – How to encrypt your email messages'
+        bookmarklet: bookmarklet
+        def_bookmarklet: bookmarklet(3)
+    }
+
 
 app.get '/update', (req, res)->
     res.render 'update', {

@@ -1,19 +1,23 @@
 BASE_URL="http://localhost:3000"
 
-HELP="This message is encrypted. Visit #{BASE_URL} to learn how to deal with it.\n\n"
-HELP_LINK="This message is encrypted. Click on link below and enter password to read it.\n\n"
+HELP_TEXT="This message is encrypted. Visit #{BASE_URL} to learn how to deal with it.\n\n"
+
+HELP_LINK="This link contains encrypted message. Open it and enter password to decrypt.\n\n#{BASE_URL}#"
 
 CRYPTO_HEADER="EnCt2"
 
 CRYPTO_FOOTER="IwEmS"
 
-HTML_INPUT = ->
+HTML_INPUT=
     "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%; display: none;' id='crypt-key-plain'/>
      <input type='password' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%;' id='crypt-key-pass'/>
     <u style='cursor: pointer; display: block; position: absolute; display: block; top: 10px; right: 6px; color: black;' id='crypt-show-pass' z-index='10000'>Unmask</u>"
 
-HTML_PUBLISH =  ->
-    "<div><input type='check' id='crypt-publish'>Convert into link</div>"
+HTML_CHECKBOX=
+    "<div style='position: absolute; display: block; right: 70px; bottom: 4px;'>
+      <input style='vertical-align: middle;' type='checkbox' id='crypt-as-link' checked='yes'/>
+      <span>Use link format</span>
+    </div>"
 
 HTML_POPUP = (title, body, action, more)->
     "<div style='position: fixed; z-index: 9999; background: #355664; border: solid gray 1px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px'>
@@ -39,7 +43,7 @@ class Popup
                 @input "Enter decryption key","Decrypt"
             else
                 if @text
-                    @input "Enter encryption key","Encrypt", HTML_PUBLISH
+                    @input "Enter encryption key","Encrypt", HTML_CHECKBOX
                 else
                     @show "Message is empty","Cancel","Please type the message first"
         else
@@ -47,7 +51,7 @@ class Popup
 
 
     input: (title, action, more) ->
-        @show title, action, HTML_INPUT(), more
+        @show title, action, HTML_INPUT, more
 
         jQuery('#crypt-show-pass').click =>
             pass = @password()
@@ -71,8 +75,8 @@ class Popup
         jQuery('#crypt-key-plain').toggle().toggle().val("")
         jQuery('#crypt-key-pass').toggle().toggle().val("")
 
-    show: (title, action, body) ->
-        @frame = jQuery( HTML_POPUP(title, body, action))
+    show: (title, action, body, more) ->
+        @frame = jQuery(HTML_POPUP(title, body, action, more))
         jQuery('body').append( @frame )
         if action == "Cancel"
             jQuery('#crypt-btn').attr('disabled',false).click( => @hide() ).keyup( (e)=> if e.which == 27 then @hide() ).focus()
@@ -187,17 +191,20 @@ class Popup
             hmac = hex_hmac_sha1(key, @text )
             # Pad to to 256bit (reserved for sha256 hash)
             hmac += hmac[0...24]
-            @updateNode @node, HELP + @dump( hmac + salt + Aes.Ctr.encrypt( @text, key, 256) )
+            if jQuery('#crypt-as-link').is(':checked')
+                @updateNode @node, HELP_LINK + @dump( hmac + salt + Aes.Ctr.encrypt( @text, key, 256) )
+            else
+                @updateNode @node, HELP_TEXT + @dump( hmac + salt + Aes.Ctr.encrypt( @text, key, 256), 80 )
             callback( true )
 
-    dump: (text) ->
+    dump: (text, split) ->
         text = CRYPTO_HEADER + text + CRYPTO_FOOTER
 
         i = 0
         out = ""
         for i in [0...text.length]
             out += text.charAt i
-            if (i % 80 ) == 79 then out += '\n'
+            if split and (i % split ) == (split-1) then out += '\n'
         out
 
 

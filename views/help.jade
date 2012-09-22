@@ -1,0 +1,90 @@
+extends layout
+
+block contents
+    h1#video Demo video
+    .line
+    .article
+        h3 In-browser solution to encrypt text messages by&nbsp;
+          a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") Advanced Encryption Standard (AES)
+        center
+          iframe(width="560", height="315", src="https://www.youtube.com/embed/ItTkczs_cRA", frameborder="0", allowfullscreen)
+        p &nbsp;
+
+        p Encrypting email with Encipher.it is a simple way to protect your sensitive data. You can encrypt emails with your private info like credit card number and only the recipient can decrypt it with correct password. To deal with email encryption you have to type the message in Gmail or any other email web service, click on Encipher It button and create a password. In the same way you can encrypt messages in Facebook or any other social networks and web services. You need only to enter your message in a text field, use bookmarklet and type a password to encrypt message. See detailed instructions for message encryption below.
+    h1 How to install
+    .line
+    #install.article
+        h2 1. Add bookmark
+        .line
+        .articleBody.clear
+            .figure1
+                img(src="/images/step1.png")
+             p 
+                b Firefox or Google Chrome:
+                br
+                span Drag this link: &nbsp;
+                a(href=def_bookmarklet)
+                    b Encipher It
+                span &nbsp;&nbsp; to your Bookmarks Bar
+
+            p
+                b Internet Explorer:
+                br
+                span Right click: &nbsp;
+                a(href=def_bookmarklet)
+                    b Encipher It
+                span &nbsp; and click "Add to Favorites"
+            p
+                b Apple Devices
+                br
+                a(href="/ios") Please use iOS version
+
+            p
+                span If you need to decode text from the first version, use&nbsp;
+                a(href=bookmarklet(0))
+                    b this
+                span &nbsp;bookmarklet.
+    .article
+        h2 2. Encrypt message
+        .line 
+        .articleBody.clear
+            .figure
+                img(src="/images/step2.png", width="500")
+            p
+                span Login to 
+                b Google Mail, 
+                b Facebook 
+                span or other site where you want to protect the text. 
+            p Type your message and click the bookmark.
+            p Enter the password and click the "Encrypt" button. 
+
+
+    .article
+        h2 3. Decrypt message
+        .line 
+        .articleBody.clear
+            .figure
+                img(src="/images/step3.png", width="500")
+            p To decrypt the message on the page, just click bookmark again and reenter the same password.
+
+    h1 How It Works
+    .line 
+    #how.article
+        .articleBody.clear
+            p 
+              | The bookmark above actually is javascript code that can be injected to any HTML page to perform some task.
+              | The task is to ask for the string passphrase, generate key, and encrypt or decrypt focused textarea. We use 
+              a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") AES 
+              | encryption with
+              a(href="http://en.wikipedia.org/wiki/PBKDF2", target="new", rel="nofollow") PBKDF2 
+              | key generation.
+              | The text is encrypted and decrypted locally, without external server.
+            p
+              | However, because of encryption code still loaded from the server, there is can be 
+              a(href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack",rel="nofollow") man-in-the-middle 
+              | attack.
+              | So please check that your HTTPS connection certificate is valid.
+              | If you see alert (like red HTTPS on my instruction images), please stop use the tool and send me note!
+            p
+              | The source code of this site is available on
+              a(href="https://github.com/ermakus/encipher.it") GitHub
