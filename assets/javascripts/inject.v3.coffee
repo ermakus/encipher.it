@@ -260,7 +260,7 @@ class Popup
     findInput: ->
         # Check for gmail first
         # Plain textarea
-        node = jQuery('#canvas_frame').contents().find('textarea[name=body]:visible')
+        node = jQuery('#canvas_frame').contents().find('textarea:focus')
         if node.length then return [node, node.val()]
         # Rich formatting
         node = jQuery('#canvas_frame').contents().find('iframe.editable').contents().find('body')
