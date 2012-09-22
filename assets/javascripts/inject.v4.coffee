@@ -16,7 +16,7 @@ HTML_INPUT=
 HTML_CHECKBOX=
     "<div style='position: absolute; display: block; right: 60px; bottom: 4px;'>
       <input style='vertical-align: middle;' type='checkbox' id='crypt-as-link' checked='yes'/>
-      <label for='crypt-as-link'>Link for easy decode</label>
+      <label for='crypt-as-link'>Encode to link</label>
     </div>"
 
 HTML_POPUP = (title, body, action, more)->
