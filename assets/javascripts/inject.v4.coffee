@@ -14,9 +14,9 @@ HTML_INPUT=
     <u style='cursor: pointer; display: block; position: absolute; display: block; top: 10px; right: 6px; color: black;' id='crypt-show-pass' z-index='10000'>Unmask</u>"
 
 HTML_CHECKBOX=
-    "<div style='position: absolute; display: block; right: 70px; bottom: 4px;'>
+    "<div style='position: absolute; display: block; right: 60px; bottom: 4px;'>
       <input style='vertical-align: middle;' type='checkbox' id='crypt-as-link' checked='yes'/>
-      <label for='crypt-as-link'>Create link for easy decode</label>
+      <label for='crypt-as-link'>Link for easy decode</label>
     </div>"
 
 HTML_POPUP = (title, body, action, more)->
