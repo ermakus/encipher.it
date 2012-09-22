@@ -47,7 +47,7 @@ app.get '/', (req, res)->
         return res.redirect settings.BASE_URL + '/ios'
     else
         res.render 'index', {
-            title: 'Encipher.it – encrypt email in one click'
+            title: 'Encipher.it – encrypt text or email in one click'
             bookmarklet: bookmarklet
             def_bookmarklet: bookmarklet(4)
             def_code: bookmarklet_code(4)
@@ -56,7 +56,7 @@ app.get '/', (req, res)->
 
 app.get '/help', (req, res)->
     res.render 'help', {
-        title: 'Encipher.it – How to encrypt your email messages'
+        title: 'Encipher.it – How to encrypt emails and text messages'
         bookmarklet: bookmarklet
         def_bookmarklet: bookmarklet(3)
     }
