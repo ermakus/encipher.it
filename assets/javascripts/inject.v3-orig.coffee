@@ -1,25 +1,17 @@
 BASE_URL="http://localhost:3000"
 
-HELP_TEXT="This message is encrypted. Visit #{BASE_URL} to learn how to deal with it.\n\n"
-
-HELP_LINK="This link contains encrypted message. Open it and enter password to decrypt.\n\n#{BASE_URL}#"
+HELP="This message is encrypted. Visit #{BASE_URL} to learn how to deal with it.\n\n"
 
 CRYPTO_HEADER="EnCt2"
 
 CRYPTO_FOOTER="IwEmS"
 
-HTML_INPUT=
+HTML_INPUT = ->
     "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%; display: none;' id='crypt-key-plain'/>
      <input type='password' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%;' id='crypt-key-pass'/>
     <u style='cursor: pointer; display: block; position: absolute; display: block; top: 10px; right: 6px; color: black;' id='crypt-show-pass' z-index='10000'>Unmask</u>"
 
-HTML_CHECKBOX=
-    "<div style='position: absolute; display: block; right: 85px; bottom: 4px;'>
-      <input style='vertical-align: middle;' type='checkbox' id='crypt-as-link' checked='yes'/>
-      <label for='crypt-as-link'>Create link</label>
-    </div>"
-
-HTML_POPUP = (title, body, action, more)->
+HTML_POPUP = (title, body, action)->
     "<div style='position: fixed; z-index: 9999; background: #355664; border: solid gray 1px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px'>
         <div style='position: absolute; left: 0; right: 0; color: white; margin: 4px; height: 32px;'>
             <b style='padding: 8px; float: left;'>#{title}</b>
@@ -28,8 +20,8 @@ HTML_POPUP = (title, body, action, more)->
         <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; left: 0; right: 0;'>
             #{body}
             <b style='position: absolute; display: block; left: 4px; bottom: 4px;' id='crypt-message''></b>
+            <a href='" + BASE_URL + "/update'>New version is available</a></b>
             <input disabled='true' style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-btn' type='button' value='#{action}'/>
-            #{more}
         </div>
     </div>"
 
@@ -43,15 +35,15 @@ class Popup
                 @input "Enter decryption key","Decrypt"
             else
                 if @text
-                    @input "Enter encryption key","Encrypt", HTML_CHECKBOX
+                    @input "Enter encryption key","Encrypt"
                 else
                     @show "Message is empty","Cancel","Please type the message first"
         else
             @show "Message not found","Cancel","Please select the input area"
 
 
-    input: (title, action, more) ->
-        @show title, action, HTML_INPUT, more
+    input: (title, action) ->
+        @show title, action, HTML_INPUT()
 
         jQuery('#crypt-show-pass').click =>
             pass = @password()
@@ -75,8 +67,8 @@ class Popup
         jQuery('#crypt-key-plain').toggle().toggle().val("")
         jQuery('#crypt-key-pass').toggle().toggle().val("")
 
-    show: (title, action, body, more) ->
-        @frame = jQuery(HTML_POPUP(title, body, action, more))
+    show: (title, action, body) ->
+        @frame = jQuery( HTML_POPUP(title, body, action))
         jQuery('body').append( @frame )
         if action == "Cancel"
             jQuery('#crypt-btn').attr('disabled',false).click( => @hide() ).keyup( (e)=> if e.which == 27 then @hide() ).focus()
@@ -191,20 +183,17 @@ class Popup
             hmac = hex_hmac_sha1(key, @text )
             # Pad to to 256bit (reserved for sha256 hash)
             hmac += hmac[0...24]
-            if jQuery('#crypt-as-link').is(':checked')
-                @updateNode @node, HELP_LINK + @dump( hmac + salt + Aes.Ctr.encrypt( @text, key, 256) )
-            else
-                @updateNode @node, HELP_TEXT + @dump( hmac + salt + Aes.Ctr.encrypt( @text, key, 256), 80 )
+            @updateNode @node, HELP + @dump( hmac + salt + Aes.Ctr.encrypt( @text, key, 256) )
             callback( true )
 
-    dump: (text, split) ->
+    dump: (text) ->
         text = CRYPTO_HEADER + text + CRYPTO_FOOTER
 
         i = 0
         out = ""
         for i in [0...text.length]
             out += text.charAt i
-            if split and (i % split ) == (split-1) then out += '\n'
+            if (i % 80 ) == 79 then out += '\n'
         out
 
 

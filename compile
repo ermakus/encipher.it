@@ -7,6 +7,7 @@ coffee patch.coffee ./settings.js \
       ./public/javascripts/inject.js \
       ./public/javascripts/inject.v2.js \
       ./public/javascripts/inject.v3.js \
+      ./public/javascripts/inject.v3-orig.js \
       ./public/javascripts/inject.v4.js \
       ./public/javascripts/inject.vios.js \
       https://encipher.it

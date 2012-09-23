@@ -31,7 +31,8 @@ app.configure ->
     js.root = 'javascripts'
     js('inject.js')
     js('inject.v2.js')
-    js('inject.v3.js')
+    js('inject.v3.js') # same as v4
+    js('inject.v3-orig.js') # old v3
     js('inject.v4.js')
     js('inject.vios.js')
 
@@ -58,7 +59,7 @@ app.get '/help', (req, res)->
     res.render 'help', {
         title: 'Encipher.it – How to encrypt emails and text messages'
         bookmarklet: bookmarklet
-        def_bookmarklet: bookmarklet(3)
+        def_bookmarklet: bookmarklet(4)
     }
 
 
@@ -66,7 +67,7 @@ app.get '/update', (req, res)->
     res.render 'update', {
         title: 'Encipher.it – new version available'
         bookmarklet: bookmarklet
-        def_bookmarklet: bookmarklet(3)
+        def_bookmarklet: bookmarklet(4)
     }
 
 app.get '/ios', (req, res)->
