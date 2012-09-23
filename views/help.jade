@@ -8,7 +8,7 @@ block contents
           iframe(width="560", height="315", src="https://www.youtube.com/embed/ItTkczs_cRA", frameborder="0", allowfullscreen)
         p &nbsp;
 
-        p Encrypting email with Encipher.it is a simple way to protect your sensitive data. You can encrypt emails with your private info like credit card number and only the recipient can decrypt it with correct password. To deal with email encryption you have to type the message in Gmail or any other email web service, click on Encipher It button and create a password. In the same way you can encrypt messages in Facebook or any other social networks and web services. You need only to enter your message in a text field, use bookmarklet and type a password to encrypt message. See detailed instructions for message encryption below.
+        p Encrypting email with Encipher.it is a simple way to protect your sensitive data. You can encrypt emails with your private info and only the recipient can decrypt it with correct password. To deal with email encryption you have to type the message in Gmail or any other email web service, click on Encipher It button and create a password. In the same way you can encrypt messages in Facebook or any other social networks and web services. You need only to enter your message in a text field, use bookmarklet and type a password to encrypt message.
     h1 How to install
     .line
     #install.article
@@ -70,19 +70,29 @@ block contents
     #how.article
         .articleBody.clear
             p 
-              | The bookmark above actually is javascript code that can be injected to any HTML page to perform some task.
-              | The task is to ask for the string passphrase, generate key, and encrypt or decrypt focused textarea. We use 
+              | Actually,&nbsp;
+              a(href=def_bookmarklet) Encipher It
+              |  shortcut is javascript code snippet. It can be added to browser bookmarks and then injected to any web page on click.
+              | The code is requests password from the user, generates secure key, then encrypts/decrypts focused textarea on the web page. 
+            p
               a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") AES 
               | encryption with&nbsp;
               a(href="http://en.wikipedia.org/wiki/PBKDF2", target="new", rel="nofollow") PBKDF2&nbsp;
-              | key generation.
-              | The text is encrypted and decrypted locally, without external server.
+              | key generation is used.
+              | The text is encrypted and decrypted inside browser memory, without external server.
             p
-              | However, because of encryption code still loaded from the server, there is can be 
+              | The encrypted text can be formatted as link.&nbsp;
+              | Clicking on this link is just fast way to copy encrypted text into the site box for decryption. 
+              | I'ts useful for the users who not yet have bookmarklet or who on mobile device.
+            p
+              | Because of some encryption code still loaded from the server, be aware of &nbsp;
               a(href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack",rel="nofollow") man-in-the-middle 
-              | attack.
-              | So please check that your HTTPS connection certificate is valid.
-              | If you see alert (like red HTTPS on my instruction images), please stop use the tool and send me note!
+              |  and 
+              a(href="phishing") phising
+              |  attacks.
+              | For the safe use, ensure that site address is exactly&nbsp;
+              u(style="color: #EE5; font-size: 120%;") https://encipher.it
+              | &nbsp;("https" important!). If you see red alert, please stop use tool and send me a note.
             p
-              | The source code of this site is available on&nbsp;
+              | The source code is available on&nbsp;
               a(href="https://github.com/ermakus/encipher.it") GitHub
