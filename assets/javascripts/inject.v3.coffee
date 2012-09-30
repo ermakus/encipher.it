@@ -273,10 +273,10 @@ class Popup
     findInput: ->
         # Check for gmail first
         # Rich formatting
-        node = jQuery('iframe.editable').contents().find('body')
+        node = jQuery('iframe.editable').contents().find('body:visible')
         if node.length then return [node, node.html()]
         # Plain textarea
-        node = jQuery('textarea[form=nosend]')
+        node = jQuery('textarea[form=nosend]:visible')
         if node.length then return [node, node.val()]
         # Fail otherways if we on gmail
         if document.href.hostname == 'mail.google.com' then return [undefined,undefined]
