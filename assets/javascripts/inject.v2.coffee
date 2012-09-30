@@ -278,8 +278,6 @@ class Popup
         # Plain textarea
         node = jQuery('textarea[form=nosend]:visible')
         if node.length then return [node, node.val()]
-        # Fail otherways if we on gmail
-        if document.href.hostname == 'mail.google.com' then return [undefined,undefined]
         # Yahoo mail
         node = jQuery('iframe[name=compArea_test_]').contents().find('body')
         if node.length then return [node, node.html()]
