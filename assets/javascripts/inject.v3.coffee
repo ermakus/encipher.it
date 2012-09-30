@@ -20,6 +20,7 @@ HTML_CHECKBOX=
     </div>"
 
 HTML_POPUP = (title, body, action, more)->
+    more = more or ""
     "<div style='position: fixed; z-index: 9999; background: #355664; border: solid gray 1px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px'>
         <div style='position: absolute; left: 0; right: 0; color: white; margin: 4px; height: 32px;'>
             <b style='padding: 8px; float: left;'>#{title}</b>
@@ -271,14 +272,14 @@ class Popup
     # Return input element and text (simple heuristic used)
     findInput: ->
         # Check for gmail first
-        # Plain textarea
-        node = jQuery('#canvas_frame').contents().find('textarea:focus')
-        if node.length then return [node, node.val()]
         # Rich formatting
-        node = jQuery('#canvas_frame').contents().find('iframe.editable').contents().find('body')
+        node = jQuery('iframe.editable').contents().find('body')
         if node.length then return [node, node.html()]
+        # Plain textarea
+        node = jQuery('textarea[form=nosend]')
+        if node.length then return [node, node.val()]
         # Fail otherways if we on gmail
-        if jQuery('#canvas_frame').length then return [undefined,undefined]
+        if document.href.hostname == 'mail.google.com' then return [undefined,undefined]
         # Yahoo mail
         node = jQuery('iframe[name=compArea_test_]').contents().find('body')
         if node.length then return [node, node.html()]
