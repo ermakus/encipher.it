@@ -273,7 +273,7 @@ class Popup
     findInput: ->
         # Check for gmail first
         # Rich formatting
-        node = jQuery('iframe.editable').contents().find('body:visible')
+        node = jQuery('iframe.editable:visible').contents().find('body')
         if node.length then return [node, node.html()]
         # Plain textarea
         node = jQuery('textarea[form=nosend]:visible')
