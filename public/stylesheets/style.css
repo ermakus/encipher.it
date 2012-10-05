@@ -243,3 +243,28 @@ div.footer a.up{
     width: 99%;
     height: 400px;
 }
+
+.right {
+   float: right;
+   clear: both;
+}
+
+.button {
+    background-color:#333;
+    -moz-border-radius:6px;
+    -webkit-border-radius:6px;
+    border-radius:6px;
+    border:1px solid #777;
+    display:inline-block;
+    color:#EEE;
+    font-family:arial;
+    font-size:15px;
+    padding:6px 24px;
+    text-decoration:none;
+    margin-right: 10px;
+}.button:hover {
+    background-color:#09090a;
+}.button:active {
+    position:relative;
+    top:1px;
+}

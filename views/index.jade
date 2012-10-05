@@ -1,25 +1,37 @@
 extends layout
 
 block contents
-
   #articles.section
+
     #message.article(style="display: none;")
         .articleBody.clear
             h2 You got a ciphered message!
             p To decode you need a password. Ask sender of the message if you don't know it.
+
     #help.article
         .articleBody.clear
             p Encrypting email with Encipher.it is a simple way to protect your sensitive data. You can encrypt emails or text messages and only the recipient can decrypt it with correct password. Encipher.it integrated with google mail and many other web applications.
             h3 
                 a(href="/help#video") Click here to see demo
-    #try.article
+            p
+                | You can use this box below to encrypt and decrypt messages. Copy and paste text, then click&nbsp;
+                a(href=def_bookmarklet)
+                    b Encipher It
+
+    #testbed.article
         .articleBody.clear
             p
-                | You can use this box to encrypt and decrypt messages. Copy and paste text, then click&nbsp;
-                a#encipher(href=def_bookmarklet)
-                    b Encipher It
+                span
+                    a.encipher.button(href=def_bookmarklet) Encipher It
+                    a#copy.button(href='#') Copy
+                span.right
+                    b Send to&nbsp;
+                    a.gmail.button(href="#") GMail
+                    a.facebook.button(href="#") Facebook
+                    a.twitter.button(href="#") Twitter
+
             p
-                textarea#txt(style="text-wrap: unrestricted;", name="txtbdy")= crypto
+                textarea#txt(style="text-wrap: unrestricted;", name="txtbdy", autofocus="autofocus")= crypto
 
             p
                 | This application use 
@@ -27,13 +39,51 @@ block contents
                 | algorithm to protect your data. All encoding and decoding is performed by your computer.&nbsp;
                 a(href="/help#how") How it works?
 
+
+        #fb-root
+
         script
-          var txt = $('#txt').click( function() {
+          var txt = $('#txt');
+          var clip = new ZeroClipboard.Client();
+          clip.glue('copy');
+          clip.addEventListener( 'onComplete', function(client, text) {
+            $('body').css({'background-color': "#213e4a"});
+            setTimeout(function() {
+                $('body').css({'background-color': "#355664"});
+            }, 300);
+          });
+          clip.addEventListener( 'onMouseDown', function(client) {
+             clip.setText( txt.val() );
+          }); 
+          txt.click( function() {
             if($(this).val() == 'Sample text') {
               $(this).val("");
               $(this).unbind();
             }
           });
+          $('.gmail').click( function() {
+                var subject = "Top secret";
+                var body = txt.val();
+                window.open(
+                    "https://mail.google.com/mail/?view=cm&ui=2&tf=0&fs=1&to=" + 
+                        "&su=" + encodeURIComponent(subject) + 
+                        "&body=" + encodeURIComponent(body) );
+          });
+
+          (function(d){
+           window.fbAsyncInit = function(){FB.init({appId:'159179810783818'})};
+           var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
+           if (d.getElementById(id)) {return;}
+           js = d.createElement('script'); js.id = id; js.async = true;
+           js.src = "//connect.facebook.net/en_US/all.js";
+           ref.parentNode.insertBefore(js, ref);
+          }(document));
+
+          $('.facebook').click( function() {
+                var body = txt.val();
+                FB.ui({method: 'send', name: "Click here to read message", link: "http://encipher.it/#EnCt2d67792e350fd4a8615a27bc0e4a9f17b52358b41d67792e350fd4a8615a27bc0FPN5ebGYSgHLNtkXb1DlffsypbTNLNiixg==IwEmS"});
+          });
+
           if( window.location.hash.indexOf("#EnCt2") == 0 ) { 
               txt.val(window.location.hash);
               $('#message').show();
