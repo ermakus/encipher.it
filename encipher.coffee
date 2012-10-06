@@ -27,20 +27,23 @@ app.configure ->
     app.use(express.methodOverride())
     app.use(app.router)
     app.use require('connect-assets')(buildDir: __dirname + '/public')
-
     js.root = 'javascripts'
     js('inject.js')
-    js('inject.v2.js')
-    js('inject.v3.js') # same as v4
-    js('inject.v3-orig.js') # old v3
-    js('inject.v4.js')
     js('inject.vios.js')
+    js('encipher.js')
+    js('compose.js')
 
 app.configure 'development', ->
     app.use(express.errorHandler({ dumpExceptions: true, showStack: true }))
 
 app.configure 'production', ->
     app.use(express.errorHandler())
+
+app.get '/javascripts/inject:version.js', (req, res, next)->
+    if req.params.version in ['.vios','']
+        return next()
+    else
+        res.redirect '/javascripts/inject.js'
 
 app.get '/', (req, res)->
     agent = req.headers["user-agent"] or "Unknown"
@@ -50,8 +53,8 @@ app.get '/', (req, res)->
         res.render 'index', {
             title: 'Encipher.it – encrypt text or email in one click'
             bookmarklet: bookmarklet
-            def_bookmarklet: bookmarklet(4)
-            def_code: bookmarklet_code(4)
+            def_bookmarklet: bookmarklet()
+            def_code: bookmarklet_code()
             crypto: "Sample text"
         }
 
@@ -59,7 +62,7 @@ app.get '/help', (req, res)->
     res.render 'help', {
         title: 'Encipher.it – How to encrypt emails and text messages'
         bookmarklet: bookmarklet
-        def_bookmarklet: bookmarklet(4)
+        def_bookmarklet: bookmarklet()
     }
 
 
@@ -67,7 +70,7 @@ app.get '/update', (req, res)->
     res.render 'update', {
         title: 'Encipher.it – new version available'
         bookmarklet: bookmarklet
-        def_bookmarklet: bookmarklet(4)
+        def_bookmarklet: bookmarklet()
     }
 
 app.get '/ios', (req, res)->
@@ -77,22 +80,6 @@ app.get '/ios', (req, res)->
         def_code: bookmarklet_code('ios')
         layout: false
     }
-
-app.post '/survey', (req, res)->
-    pgp = req.param('PGP')
-    cost = req.param('cost')
-    mailer.send {
-        'host' : "localhost",
-        'port' : "25",
-        'domain' : "localhost",
-        'to' : "anton@ermak.us",
-        'from' : "nobody@encipher.it",
-        'subject' : "Survey from encipher.it: #{pgp}/#{cost}",
-        'body': "Interested in PGP: #{pgp}\nAble to spent: #{cost}",
-        'username': 'decipher',
-        'authentication': false }, (err)->
-            err and console.log "Send survey error: #{err.message}"
-            res.redirect( settings.BASE_URL )
 
 app.post '/feedback', (req, res)->
     name = req.param('name')

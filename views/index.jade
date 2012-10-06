@@ -22,13 +22,13 @@ block contents
         .articleBody.clear
             p
                 span
-                    a.encipher.button(href=def_bookmarklet) Encipher It
-                    a#copy.button(href='#') Copy
+                    a.encipher.button(href=def_bookmarklet)
+                        b Encipher It
                 span.right
-                    b Send to&nbsp;
-                    a.gmail.button(href="#") GMail
-                    a.facebook.button(href="#") Facebook
-                    a.twitter.button(href="#") Twitter
+                    a#copy.button(href='#',title="Copy to Clipboard") &nbsp;
+                    a.gmail.button(href="#",title="Send to GMail") &nbsp;
+                    a.facebook.button(href="#",title="Send to Facebook friend") &nbsp;
+                    a.twitter.button(href="#",title="Send to Twitter") &nbsp;
 
             p
                 textarea#txt(style="text-wrap: unrestricted;", name="txtbdy", autofocus="autofocus")= crypto
@@ -42,51 +42,3 @@ block contents
 
         #fb-root
 
-        script
-          var txt = $('#txt');
-          var clip = new ZeroClipboard.Client();
-          clip.glue('copy');
-          clip.addEventListener( 'onComplete', function(client, text) {
-            $('body').css({'background-color': "#213e4a"});
-            setTimeout(function() {
-                $('body').css({'background-color': "#355664"});
-            }, 300);
-          });
-          clip.addEventListener( 'onMouseDown', function(client) {
-             clip.setText( txt.val() );
-          }); 
-          txt.click( function() {
-            if($(this).val() == 'Sample text') {
-              $(this).val("");
-              $(this).unbind();
-            }
-          });
-          $('.gmail').click( function() {
-                var subject = "Top secret";
-                var body = txt.val();
-                window.open(
-                    "https://mail.google.com/mail/?view=cm&ui=2&tf=0&fs=1&to=" + 
-                        "&su=" + encodeURIComponent(subject) + 
-                        "&body=" + encodeURIComponent(body) );
-          });
-
-          (function(d){
-           window.fbAsyncInit = function(){FB.init({appId:'159179810783818'})};
-           var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-           if (d.getElementById(id)) {return;}
-           js = d.createElement('script'); js.id = id; js.async = true;
-           js.src = "//connect.facebook.net/en_US/all.js";
-           ref.parentNode.insertBefore(js, ref);
-          }(document));
-
-          $('.facebook').click( function() {
-                var body = txt.val();
-                FB.ui({method: 'send', name: "Click here to read message", link: "http://encipher.it/#EnCt2d67792e350fd4a8615a27bc0e4a9f17b52358b41d67792e350fd4a8615a27bc0FPN5ebGYSgHLNtkXb1DlffsypbTNLNiixg==IwEmS"});
-          });
-
-          if( window.location.hash.indexOf("#EnCt2") == 0 ) { 
-              txt.val(window.location.hash);
-              $('#message').show();
-              $('#help').hide();
-              #{def_code}();
-          }

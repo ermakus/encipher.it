@@ -8,7 +8,11 @@ html
         script(type='text/javascript', src='/javascripts/jquery.min.js')
         script(type='text/javascript', src='/javascripts/jquery.validate.pack.js')
         script(type='text/javascript', src='/javascripts/jquery.contactable.js')
+        script(type="text/javascript", src="/javascripts/encipher.js")
+        script(type="text/javascript", src="/javascripts/compose.js")
         script(type="text/javascript", src="/javascripts/ZeroClipboard.min.js")
+        script(type="text/javascript", src="https://connect.facebook.net/en_US/all.js")
+        script(type="text/javascript", src="https://apis.google.com/js/client.js?onload=googleAsyncInit")
         script
             var _gaq = _gaq || [];
             _gaq.push(['_setAccount', 'UA-17946320-4']);
@@ -20,6 +24,7 @@ html
             })();
             $(function(){ $('#contactable').contactable({url: '/feedback'});} );
     body
+        .fb-root
         #contactable
         #page.section
             .header
@@ -34,8 +39,8 @@ html
                             a(href="/help") Help
                         li
                             a(href="/ios") Mobile
-                        li
-                            iframe(src="https://www.facebook.com/plugins/like.php?href=https://encipher.it&layout=button_count&show_faces=false&width=80&action=like&font=lucida+grande&colorscheme=light", allowtransparency="true", style="border: medium none; overflow: hidden; width: 80px; height: 21px; padding-left: 20px; margin-top: 12px;", frameborder="0", scrolling="no")
+                        li#like
+                            fb:like(href="https://encipher.it",send="false",layout="button_count",width="80",show-faces="false")
             block contents
             .footer
                 .line

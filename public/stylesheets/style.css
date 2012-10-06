@@ -139,7 +139,7 @@ div.nav ul li a:hover{
 	background-color:#f0f0f0;
 }
 
-textarea, div.nav, div.article, div.nav ul li a,div.figure{
+textarea, .button, div.nav, div.article, div.nav ul li a,div.figure{
 	/* Applying CSS3 rounded corners: */
 	-moz-border-radius:10px;
 	-webkit-border-radius:10px;
@@ -237,6 +237,12 @@ div.footer a.up{
 	float:right;
 }
 
+#like {
+    display: inline-block;
+    margin-top: 10px;
+    width: 100px;
+}
+
 #txt {
     padding: 5px;
     margin: 0 auto;
@@ -250,21 +256,35 @@ div.footer a.up{
 }
 
 .button {
-    background-color:#333;
-    -moz-border-radius:6px;
-    -webkit-border-radius:6px;
-    border-radius:6px;
-    border:1px solid #777;
     display:inline-block;
     color:#EEE;
     font-family:arial;
     font-size:15px;
-    padding:6px 24px;
+    padding: 5px;
     text-decoration:none;
-    margin-right: 10px;
+    padding-left: 40px;
 }.button:hover {
-    background-color:#09090a;
-}.button:active {
-    position:relative;
-    top:1px;
+    text-decoration:none;
+}.button:visited {
+    color:#EEE;
+}
+
+.encipher {
+    background: url(/images/encipher.png) no-repeat 5px center;
+}
+
+#copy {
+    background: url(/images/copy.png) no-repeat 5px center;
+}
+
+.gmail {
+    background: url(/images/gmail.png) no-repeat 5px center;
+}
+
+.facebook {
+    background: url(/images/facebook.png) no-repeat 5px center;
+}
+
+.twitter {
+    background: url(/images/twitter.png) no-repeat 5px center;
 }
