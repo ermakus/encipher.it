@@ -1,27 +1,9 @@
+window.encipher = new Encipher()
+
 window.fbAsyncInit = ->
     FB.init
         appId:'159179810783818'
     FB.XFBML.parse(document.getElementById('like'))
-
-window.googleAsyncInit = ->
-
-window.extractCipher = (message)->
-    parts = (message or "").match /.*(EnCt2.*IwEmS).*/
-    return parts and parts[1]
-
-window.compressLink = (message, cb)->
-    parts = (message or "").match /.*(https?:\/\/.*#EnCt2.*IwEmS).*/
-    link = parts and parts[1]
-    return cb(null, message) if not link
-    gapi.client.load 'urlshortener', 'v1', ->
-        request = gapi.client.urlshortener.url.insert
-            'resource':
-                'longUrl': link
-        resp = request.execute (resp)->
-            if resp.error
-                cb(resp.error, message)
-            else
-                cb(null, message.replace( link, resp.id ) )
 
 $ ->
     # Composer box
@@ -32,13 +14,6 @@ $ ->
               composer.val("")
               #composer.unbind()
 
-    setInterval( ->
-        compressLink composer.val(), (error, message)->
-            if not error
-                composer.val(message)
-            else
-                console.log error.message
-    , 1000)
 
     # Copy to clipboard
     clip = new ZeroClipboard.Client()
@@ -65,13 +40,21 @@ $ ->
         FB.ui(
             method: 'send'
             name: "Click here to read encrypted message"
-            link: "http://encipher.it/#" + extractCipher(composer.val())
+            link: 'https://encipher.it#' + encipher.extractCipher(composer.val())
         )
 
-    cipher = extractCipher(window.location.hash)
+    cipher = encipher.extractCipher(window.location.hash)
     if cipher
-        composer.val(cipher)
-        $('#message').show()
-        $('#help').hide()
-        clip.reposition()
+        encipher.format.beforeDecrypt cipher, (err, cipher)->
+            if err
+                alert err.message
+            else
+                composer.val(cipher)
+                $('#message').show()
+                $('#help').hide()
+                clip.reposition()
+                encipher.startup()
+    else
+        composer.val('Sample text')
+
 

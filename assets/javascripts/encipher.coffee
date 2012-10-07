@@ -1,7 +1,3 @@
-CRYPTO_HEADER="EnCt2"
-
-CRYPTO_FOOTER="IwEmS"
-
 HTML_INPUT=
     "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%; display: none;' id='crypt-key-plain'/>
      <input type='password' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%;' id='crypt-key-pass'/>
@@ -85,7 +81,7 @@ class Popup
     # Update dialog position
     layout: ->
         [width,height] = [400,105]
-        @frame.css {'top': (jQuery(window).height() - height) / 2 + 'px', 'left':(jQuery(window).width() - width) / 2 + 'px', 'width':width + 'px' , 'height':height + 'px' }
+        @frame and @frame.css {'top': (jQuery(window).height() - height) / 2 + 'px', 'left':(jQuery(window).width() - width) / 2 + 'px', 'width':width + 'px' , 'height':height + 'px' }
 
     # Encryption password
     password: ->
@@ -112,13 +108,24 @@ class Popup
         ['<span style="#c11b17">Very weak</span>','Weak','Moderate','Strong','Very strong'][strength-1]
 
 
+CRYPTO_HEADER="EnCt2"
+
+CRYPTO_FOOTER="IwEmS"
 
 # Main service class
 window.Encipher = class Encipher
 
     constructor: (@base) ->
-        @base ||= (window.location.protocol + ':\\' + window.location.host)
+        @base ||= (window.location.protocol + '//' + window.location.host)
+        @format = new Format(@)
         @cache = {}
+
+    # Extract ciphered message or hash reference from the text
+    extractCipher: (message)->
+        parts = (message or "").match /.*(EnCt2.*IwEmS).*/
+        return parts[1] if parts
+        parts = (message or "").match /.*(\$[0-9A-Fa-f]{40}).*/
+        return parts and parts[1]
 
     # Traverse document and collect all encrypted blocks to collection
     findEncrypted: ->
@@ -126,16 +133,14 @@ window.Encipher = class Encipher
         [nodes, texts] = [[],[]]
 
         # Extract encoded block from element and put it to collection
-        found = (elem,txt) ->
-            txt = txt.replace /[\n> ]/g,''
-            hdr = txt.indexOf( CRYPTO_HEADER )
-            ftr = txt.indexOf( CRYPTO_FOOTER )
-            if hdr >= 0 and ftr >= 0
-                txt = txt[ hdr + CRYPTO_HEADER.length ... ftr ]
+        found = (elem,txt) =>
+            cipher = @extractCipher(txt.replace(/[\n> ]/g,''))
+            if cipher
                 nodes.push elem
-                texts.push txt
+                texts.push cipher
                 return 1
-            return 0
+            else
+                return 0
 
         # Traverse DOM and search for encoded block headers
         traverse = (node) ->
@@ -162,13 +167,12 @@ window.Encipher = class Encipher
         traverseBody = (body) ->
             body.each -> traverse this
             body.find("iframe").each ->
-                try
-                    traverseBody( jQuery(this).contents().find('body') )
-                catch e
-
-
+                iframe = $(this).get(0)
+                if iframe.src.indexOf(location.protocol + '//' + location.host) == 0 or iframe.src.indexOf('about:blank') == 0 or iframe.src == ''
+                    try
+                        traverseBody( jQuery(this).contents().find('body') )
+                    catch e
         traverseBody jQuery('body')
-    
         return [nodes,texts]
 
 
@@ -222,18 +226,22 @@ window.Encipher = class Encipher
 
     # Decrypt text in DOM node
     decryptNode: (node, text, password, callback)->
-        hash = text[0...64]
-        hmac = text[0...40]
-        salt = text[64...72]
-        text = text[72...]
-        @derive password, salt, (key) =>
-            text = Aes.Ctr.decrypt( text, key, 256 )
-            # Old version used hash - changed to more secure HMAC in latest
-            if hex_hmac_sha1(key, text ) == hmac or hash == Sha256.hash( text )
-                @updateNode node, text
-                callback( true )
-            else
-                callback( false )
+        @format.beforeDecrypt text, (err, text)=>
+            return callback(false) if err
+            @updateNode node, text
+            text = text.slice(5,text.length-5)
+            hash = text[0...64]
+            hmac = text[0...40]
+            salt = text[64...72]
+            text = text[72...]
+            @derive password, salt, (key) =>
+                text = Aes.Ctr.decrypt( text, key, 256 )
+                # Old version used hash - changed to more secure HMAC in latest
+                if hex_hmac_sha1(key, text ) == hmac or hash == Sha256.hash( text )
+                    @updateNode node, text
+                    callback( true )
+                else
+                    callback( false )
  
     # Decrypt all encrypted nodes
     decrypt: (password, callback)->
@@ -258,18 +266,11 @@ window.Encipher = class Encipher
             hmac = hex_hmac_sha1(key, @text )
             # Pad to to 256bit (reserved for sha256 hash)
             hmac += hmac[0...24]
-            if jQuery('#crypt-as-link').is(':checked')
-                @updateNode @node, @base + '#' + @dump( hmac + salt + Aes.Ctr.encrypt( @text, key, 256) )
-            else
-                @updateNode @node, @dump( hmac + salt + Aes.Ctr.encrypt( @text, key, 256), true ) + "\n\nEncrypted by " + @base
-            callback( true )
-
-    dump: (text, split) ->
-        text = CRYPTO_HEADER + text + CRYPTO_FOOTER
-        if split
-            text.match(/.{0,80}/g).join('\n')
-        else
-            text
+            cipher = CRYPTO_HEADER + hmac + salt + Aes.Ctr.encrypt( @text, key, 256) + CRYPTO_FOOTER
+            
+            @format.afterEncrypt cipher, (err, cipher)=>
+                @updateNode @node, cipher
+                callback( true )
 
     # Update text 
     updateNode: (node, value)->
@@ -309,3 +310,58 @@ window.Encipher = class Encipher
         else
             @gui.alert("Invalid password")
 
+# Format encrypted as text
+class TextFormat
+    constructor: (@encipher)->
+
+    afterEncrypt: (message, callback) ->
+        callback( null, message.match(/.{0,80}/g).join('\n') + "\nEncrypted by " + @encipher.base )
+
+    beforeDecrypt: (message, callback) ->
+        callback( null, message )
+
+# Format encrypted as link
+class LinkFormat
+    constructor: (@encipher)->
+
+    afterEncrypt: (message, callback) ->
+        callback( null, @encipher.base + '#' + message )
+
+    beforeDecrypt: (message, callback) ->
+        callback( null, message )
+
+# Format encrypted text as short link (will be stored on server)
+class ShortLinkFormat
+    constructor: (@encipher)->
+
+    afterEncrypt: (message, cb)->
+        body = @encipher.extractCipher( message )
+        return cb(null, message) if not body
+        $.post @encipher.base + "/pub", {body}, (res)=>
+            cb(null, message.replace( body, @encipher.base + '#$'+res) )
+
+    beforeDecrypt: (message, cb)->
+        hash = @encipher.extractCipher( message )
+        return cb(null, message) if not hash or hash[0] != '$'
+        $.post @encipher.base + "/pub", {hash:hash[1...]}, (res)=>
+            cb(null, message.replace(hash, res) )
+
+# Format selector
+class Format
+    constructor: (@encipher)->
+        @text  = new TextFormat(@encipher)
+        @link  = new LinkFormat(@encipher)
+        @short = new ShortLinkFormat(@encipher)
+        @selected  = @short
+
+    # Format with with selected type
+    afterEncrypt: (message, callback) ->
+        @selected.afterEncrypt(message, callback)
+
+    # Unpack all supported formats
+    beforeDecrypt: (message, callback) ->
+        @text.beforeDecrypt message, (err, message)=>
+            return callback(err, message) if err
+            @link.beforeDecrypt message, (err, message)=>
+                return callback(err, message) if err
+                @short.beforeDecrypt message, callback

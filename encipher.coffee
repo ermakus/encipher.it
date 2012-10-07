@@ -1,6 +1,8 @@
 settings = require './settings'
 express  = require 'express'
 mailer   = require 'mailer'
+mongoose = require 'mongoose'
+crypto   = require 'crypto'
 
 # JS code to inject in page
 bookmarklet_code = (version)->
@@ -15,6 +17,15 @@ bookmarklet_code = (version)->
 bookmarklet = (version)->
     return "javascript:" + bookmarklet_code(version) + "();"
 
+db = mongoose.createConnection('localhost', 'test')
+db.on('error', console.error.bind(console, 'connection error:'))
+
+MessageSchema = mongoose.Schema
+    hash: String
+    body: String
+    stump: Date
+
+Message = db.model('Message', MessageSchema)
 
 app = module.exports = express()
 
@@ -39,37 +50,68 @@ app.configure 'development', ->
 app.configure 'production', ->
     app.use(express.errorHandler())
 
+# Redirect all bookmarklet versions to single hook
 app.get '/javascripts/inject:version.js', (req, res, next)->
-    if req.params.version in ['.vios','']
+    if req.params.version == ''
         return next()
     else
         res.redirect '/javascripts/inject.js'
 
-app.get '/', (req, res)->
-    agent = req.headers["user-agent"] or "Unknown"
-    if false #agent.match(/iPad/) or agent.match(/iPhone/)
-        return res.redirect settings.BASE_URL + '/ios'
+# CORS middleware
+allowCrossDomain = (req, res, next)->
+   res.header 'Access-Control-Allow-Origin', '*'
+   res.header 'Access-Control-Allow-Credentials', true
+   res.header 'Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS'
+   res.header 'Access-Control-Allow-Headers', 'Content-Type'
+   next()
+
+# Allow cross-origin requests
+app.options '/pub', allowCrossDomain, (req, res, next)->
+    next()
+
+# Public store for encrypted messages
+app.post '/pub', allowCrossDomain, (req, res)->
+    # If hash passed, then lookup body
+    hash = req.param('hash','')
+    if hash
+        Message.findOne {hash}, (err, msg)->
+            if err
+                res.send( err.message, 500 )
+            else
+                if msg
+                    res.send( msg.body )
+                else
+                    res.send "Not found", 404
     else
-        res.render 'index', {
-            title: 'Encipher.it – encrypt text or email in one click'
-            bookmarklet: bookmarklet
-            def_bookmarklet: bookmarklet()
-            def_code: bookmarklet_code()
-            crypto: "Sample text"
-        }
+        # else calck body hash and store it
+        body = req.param('body','')
+        if body
+            hash = crypto.createHash('sha1').update(body).digest('hex')
+            Message.findOne {hash}, (err, msg)->
+                if err
+                    res.send( err.message, 500 )
+                else
+                    if msg
+                        res.send( hash )
+                    else
+                        msg = new Message({hash,body})
+                        msg.save (err)->
+                            if err
+                                res.send( err.message, 500 )
+                            else
+                                res.send( hash )
+        else
+            res.send("Invalid request", 500)
+
+app.get '/', (req, res)->
+    res.render 'index', {
+        title: 'Encipher.it – encrypt text or email in one click'
+        def_bookmarklet: bookmarklet()
+    }
 
 app.get '/help', (req, res)->
     res.render 'help', {
         title: 'Encipher.it – How to encrypt emails and text messages'
-        bookmarklet: bookmarklet
-        def_bookmarklet: bookmarklet()
-    }
-
-
-app.get '/update', (req, res)->
-    res.render 'update', {
-        title: 'Encipher.it – new version available'
-        bookmarklet: bookmarklet
         def_bookmarklet: bookmarklet()
     }
 
@@ -77,7 +119,6 @@ app.get '/ios', (req, res)->
     res.render 'ios', {
         title: 'Encipher.it - iOS version'
         def_bookmarklet: bookmarklet('ios')
-        def_code: bookmarklet_code('ios')
         layout: false
     }
 
