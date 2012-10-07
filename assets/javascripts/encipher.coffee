@@ -1,98 +1,196 @@
-HTML_INPUT=
-    "<input type='text' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%; display: none;' id='crypt-key-plain'/>
-     <input type='password' style='position: absolute; display: block; top: 4px; left: 4px; right: 4px; bottom: 32px; width: 97%;' id='crypt-key-pass'/>
-    <u style='cursor: pointer; display: block; position: absolute; display: block; top: 10px; right: 6px; color: black;' id='crypt-show-pass' z-index='10000'>Unmask</u>"
+GUI = (encipher)-> """ 
+<style>
+.encipher-popup {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    background: #355664;
+    border: solid gray 1px; 
+    -moz-border-radius: 10px; 
+    -webkit-border-radius: 10px; 
+    border-radius: 10px;
+    top: 50%;
+    left: 50%;
+    padding: 5px;
+    height: 78px;
+    width: 300px;
+    margin-top: -38px;
+    margin-left: -150px;
+}
 
-HTML_CHECKBOX=
-    "<div style='position: absolute; display: block; right: 85px; bottom: 4px;'>
-      <input style='vertical-align: middle;' type='checkbox' id='crypt-as-link' checked='yes'/>
-      <label for='crypt-as-link'>Create link</label>
-    </div>"
+.encipher-key {
+    display: block;
+    margin: 0px;
+    width: 100%;
+    padding: 0px;
+    margin-top: 4px;
+}
 
-HTML_POPUP = (base, title, body, action, more)->
-    more = more or ""
-    "<div style='position: fixed; z-index: 9999; background: #355664; border: solid gray 1px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px'>
-        <div style='position: absolute; left: 0; right: 0; color: white; margin: 4px; height: 32px;'>
-            <b style='padding: 8px; float: left;'>#{title}</b>
-            <img style='border: none; float: right; cursor: pointer;' id='crypt-close' src='#{base}/close.png'/>
+.encipher-key-input {
+    border: 0;
+    background-color: white;
+    padding: 0;
+    margin: 0;
+    padding-left: 3px;
+    width: 100%;
+    height: 25px;
+    -moz-border-radius: 4px; 
+    -webkit-border-radius: 4px; 
+    border-radius: 4px;
+}
+
+.encipher-title, .encipher-message {
+    display: inline-block;
+    padding: 5px;
+    font-size: 14px;
+    color:#fff;
+    font-family:Arial, Helvetica, sans-serif; 
+    text-decoration: none;
+}
+
+.encipher-icon {
+    -moz-border-radius: 16px; 
+    -webkit-border-radius: 16px; 
+    border-radius: 16px;
+    display: inline-block;
+    float: right;
+    margin: 0;
+    padding: 4px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.encipher-icon:hover {
+    background-color: #213e4a;
+}
+
+.encipher-settings {
+    background: url(#{encipher.base}/images/settings.png) no-repeat center center;
+}
+
+.encipher-close {
+    background: url(#{encipher.base}/images/close.png) no-repeat center center;
+}
+
+.encipher-key-mode {
+    display: block;
+    padding: 4px;
+    margin: 0px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    position: relative;
+    top: -24px;
+    z-index: 10000;
+    float: right;
+    background: url(#{encipher.base}/images/masked.png) no-repeat center center;
+}
+
+.encipher-key-mode-plain {
+    background: url(#{encipher.base}/images/unmasked.png) no-repeat center center !important;
+}
+
+.encipher-it {
+    position: absolute;
+    right: 5px;
+    bottom: 3px;
+    display: inline-block;
+    margin: 0;
+    padding: 3px;
+    padding-right:20px;
+    margin-right: 4px;
+    background: url(#{encipher.base}/images/encrypt.png) no-repeat center right !important;
+    cursor: pointer;
+    color: black;
+    font-size: 14px;
+    font-family:Arial, Helvetica, sans-serif; 
+}
+
+.encipher-it:hover {
+    text-decoration: underline;
+}
+
+</style>
+
+<div class='encipher-popup'>
+    <div class='encipher-title'></div>
+    <div class='encipher-icon encipher-close'></div>
+    <div class='encipher-icon encipher-settings'></div>
+    <div class='encipher-tab encipher-tab-key'>
+        <div class='encipher-key'>
+            <input type='text' class='encipher-key-input encipher-key-plain' style='display: none;'/>
+            <input type='password' class='encipher-key-input encipher-key-pass'/>
+            <div class='encipher-key-mode'></div>
         </div>
-        <div style='position: absolute; bottom: 0; top: 32px; margin: 4px; padding: 10px; left: 0; right: 0;'>
-            #{body}
-            <b style='position: absolute; display: block; left: 4px; bottom: 4px;' id='crypt-message''></b>
-            <input disabled='true' style='position: absolute; display: block; right: 4px; bottom: 4px;' id='crypt-btn' type='button' value='#{action}'/>
-            #{more}
-        </div>
-    </div>"
+        <div class='encipher-message'></div>
+        <div class='encipher-it'>Encipher It</div>
+    </div>
+</div>
+"""
 
 # Popup dialog
 class Popup
 
-    constructor: (@encipher, @callback)->
-
-    input: (title, action, more) ->
-        @show title, action, HTML_INPUT, more
-
-        jQuery('#crypt-show-pass').click =>
-            pass = @password()
-            jQuery('#crypt-key-plain').toggle().val(pass)
-            jQuery('#crypt-key-pass').toggle().val(pass)
-            el = jQuery('#crypt-show-pass')
-            if el.html() == 'Unmask'
-                el.html('Mask')
+    constructor: (@encipher)->
+        jQuery('body').append( GUI(@encipher) )
+        @frame = jQuery('.encipher-popup')
+        # Plain/masked mode for key input
+        jQuery('.encipher-key-plain').hide().val("")
+        jQuery('.encipher-key-pass').show().val("")
+        jQuery('.encipher-key-mode').click =>
+            key = @key()
+            jQuery('.encipher-key-plain').toggle().val(key)
+            jQuery('.encipher-key-pass').toggle().val(key)
+            el = jQuery('.encipher-key-mode')
+            if el.hasClass('encipher-key-mode-plain')
+                el.removeClass('encipher-key-mode-plain')
             else
-                el.html('Unmask')
+                el.addClass('encipher-key-mode-plain')
 
-        # Encrypt handler
-        jQuery('#crypt-key-plain,#crypt-key-pass').focus().keyup (e)=>
-            enabled = @password() != ''
+        # Keyboard events
+        jQuery('.encipher-key-input').focus().keyup (e)=>
             score = @score()
-            jQuery('#crypt-message').html(score)
-            jQuery('#crypt-btn').attr('disabled', not enabled )
+            jQuery('.encipher-message').html(score)
+            if @key() != ''
+                jQuery('.encipher-it').show()
+            else
+                jQuery('.encipher-it').hide()
             if (e.which == 27) then return @hide()
             if (e.which == 13 and enabled) then return @callback()
 
-        jQuery('#crypt-key-plain').toggle().toggle().val("")
-        jQuery('#crypt-key-pass').toggle().toggle().val("")
+        jQuery('.encipher-close').click => @hide()
 
-    show: (title, action, body, more) ->
-        @frame = jQuery(HTML_POPUP(@encipher.base, title, body, action, more))
-        jQuery('body').append( @frame )
-        if action == "Cancel"
-            jQuery('#crypt-btn').attr('disabled',false).click( => @hide() ).keyup( (e)=> if e.which == 27 then @hide() ).focus()
-        else
-            jQuery('#crypt-btn').click => @callback()
-        # Resize handler
-        jQuery(window).resize => @layout()
-        # Close handler
-        jQuery('#crypt-close').click => @hide()
-        @layout()
- 
-    alert: (msg) ->
-        jQuery('#crypt-message').html( msg )
+    # Enter key
+    input: ( title, callback ) ->
+        jQuery('.encipher-tab').hide()
+        jQuery('.encipher-title').html( title )
+        jQuery('.encipher-it').unbind().bind 'click', => callback(@key())
+        jQuery('.encipher-tab-key').show()
+        @frame.show()
+
+    # Show alert
+    alert: ( message ) ->
+        jQuery('.encipher-message').html( message )
+        @frame.show()
 
     # Hide dialog
-    hide: ->
-        @frame.remove()
-        @frame = null
+    hide: =>
+        @frame and @frame.hide()
 
     isVisible: ->
         @frame and @frame.is(':visible')
 
-    # Update dialog position
-    layout: ->
-        [width,height] = [400,105]
-        @frame and @frame.css {'top': (jQuery(window).height() - height) / 2 + 'px', 'left':(jQuery(window).width() - width) / 2 + 'px', 'width':width + 'px' , 'height':height + 'px' }
-
-    # Encryption password
-    password: ->
-        if jQuery('#crypt-key-plain').is(':visible')
-            jQuery('#crypt-key-plain').attr('value')
+    # Return current key
+    key: ->
+        if jQuery('.encipher-key-plain').is(':visible')
+            return jQuery('.encipher-key-plain').attr('value')
         else
-            jQuery('#crypt-key-pass').attr('value')
+            return jQuery('.encipher-key-pass').attr('value')
 
     # Key score
     score: ->
-        value = @password()
+        value = @key()
         strength = 1
         for regexp in [/{5\,}/, /[a-z]+/, /[0-9]+/, /[A-Z]+/]
             if value.match(regexp)
@@ -124,7 +222,7 @@ window.Encipher = class Encipher
     extractCipher: (message)->
         parts = (message or "").match /.*(EnCt2.*IwEmS).*/
         return parts[1] if parts
-        parts = (message or "").match /.*(\$[0-9A-Fa-f]{40}).*/
+        parts = (message or "").match /.*(\#[0-9A-Fa-f]{40}).*/
         return parts and parts[1]
 
     # Traverse document and collect all encrypted blocks to collection
@@ -281,36 +379,26 @@ window.Encipher = class Encipher
 
     # Called when injected by bookmarklet
     startup: ->
-        @gui ||= new Popup(@, @onAction)
+        @gui ||= new Popup(@)
         if @gui.isVisible()
             @gui.hide()
         else
             if @parse()
                 if @encrypted
-                    @gui.input "Enter decryption key", "Decrypt"
+                    @gui.input "Enter decryption key", (key)=>
+                        @decrypt key, (error)=>
+                            @gui.alert "Decrypt result #{error}"
                 else
                     if @text
-                        @gui.input "Enter encryption key", "Encrypt", HTML_CHECKBOX
+                        @gui.input "Enter encryption key", (key)=>
+                            @encrypt key, (error)=>
+                                @gui.alert "Encrypt result #{error}"
                     else
-                        @gui.show "Message is empty", "Cancel", "Please enter the message first"
+                        @gui.alert "Message is empty"
             else
-                @gui.show "Message not found", "Cancel", "Please select the input area"
+                @gui.alert "Message not found"
 
-    # Encrypt/decrypt GUI action handler
-    onAction: =>
-        if @encrypted
-            @decrypt( @gui.password(), @onResult )
-        else
-            @encrypt( @gui.password(), @onResult )
-
-    # Action result handler
-    onResult: (good)=>
-        if good
-            @gui.hide()
-        else
-            @gui.alert("Invalid password")
-
-# Format encrypted as text
+# Format encrypted as plain text
 class TextFormat
     constructor: (@encipher)->
 
@@ -320,7 +408,7 @@ class TextFormat
     beforeDecrypt: (message, callback) ->
         callback( null, message )
 
-# Format encrypted as link
+# Format encrypted text as self contained link
 class LinkFormat
     constructor: (@encipher)->
 
@@ -330,7 +418,8 @@ class LinkFormat
     beforeDecrypt: (message, callback) ->
         callback( null, message )
 
-# Format encrypted text as short link (will be stored on server)
+# Format encrypted text as short link 
+# Ciphered text will be stored on the public remote server
 class ShortLinkFormat
     constructor: (@encipher)->
 
@@ -338,11 +427,11 @@ class ShortLinkFormat
         body = @encipher.extractCipher( message )
         return cb(null, message) if not body
         $.post @encipher.base + "/pub", {body}, (res)=>
-            cb(null, message.replace( body, @encipher.base + '#$'+res) )
+            cb(null, message.replace( body, @encipher.base + '#'+res) )
 
     beforeDecrypt: (message, cb)->
         hash = @encipher.extractCipher( message )
-        return cb(null, message) if not hash or hash[0] != '$'
+        return cb(null, message) if not hash or hash[0] != '#'
         $.post @encipher.base + "/pub", {hash:hash[1...]}, (res)=>
             cb(null, message.replace(hash, res) )
 

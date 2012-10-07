@@ -40,10 +40,10 @@ $ ->
         FB.ui(
             method: 'send'
             name: "Click here to read encrypted message"
-            link: 'https://encipher.it#' + encipher.extractCipher(composer.val())
+            link: composer.val()
         )
 
-    cipher = encipher.extractCipher(window.location.hash)
+    cipher = encipher.extractCipher('#'+window.location.hash)
     if cipher
         encipher.format.beforeDecrypt cipher, (err, cipher)->
             if err
