@@ -12,10 +12,10 @@ GUI = (encipher)-> """
     top: 50%;
     left: 50%;
     padding: 5px;
-    height: 78px;
-    width: 300px;
-    margin-top: -38px;
-    margin-left: -150px;
+    height: 90px;
+    width: 390px;
+    margin-top: -50px;
+    margin-left: -200px;
 }
 
 .encipher-key {
@@ -23,7 +23,7 @@ GUI = (encipher)-> """
     margin: 0px;
     width: 100%;
     padding: 0px;
-    margin-top: 4px;
+    margin-top: 10px;
 }
 
 .encipher-key-input {
@@ -48,6 +48,10 @@ GUI = (encipher)-> """
     text-decoration: none;
 }
 
+.encipher-message {
+    margin-top: 8px;
+}
+
 .encipher-icon {
     -moz-border-radius: 16px; 
     -webkit-border-radius: 16px; 
@@ -66,11 +70,11 @@ GUI = (encipher)-> """
 }
 
 .encipher-settings {
-    background: url(#{encipher.base}/images/settings.png) no-repeat center center;
+    background: url(#{encipher.base}/images/settings-white.png) no-repeat center center;
 }
 
 .encipher-close {
-    background: url(#{encipher.base}/images/close.png) no-repeat center center;
+    background: url(#{encipher.base}/images/close-white.png) no-repeat center center;
 }
 
 .encipher-key-mode {
@@ -98,13 +102,13 @@ GUI = (encipher)-> """
     display: inline-block;
     margin: 0;
     padding: 3px;
-    padding-right:20px;
+    padding-left:20px;
     margin-right: 4px;
-    background: url(#{encipher.base}/images/encrypt.png) no-repeat center right !important;
     cursor: pointer;
-    color: black;
+    color: white;
     font-size: 14px;
     font-family:Arial, Helvetica, sans-serif; 
+    background: url(#{encipher.base}/images/encrypt-white.png) no-repeat center left;
 }
 
 .encipher-it:hover {
@@ -163,7 +167,6 @@ class Popup
 
     # Enter key
     input: ( title, callback ) ->
-        jQuery('.encipher-tab').hide()
         jQuery('.encipher-title').html( title )
         jQuery('.encipher-it').unbind().bind 'click', => callback(@key())
         jQuery('.encipher-tab-key').show()
@@ -368,7 +371,7 @@ window.Encipher = class Encipher
             
             @format.afterEncrypt cipher, (err, cipher)=>
                 @updateNode @node, cipher
-                callback( true )
+                callback( err )
 
     # Update text 
     updateNode: (node, value)->
@@ -386,13 +389,19 @@ window.Encipher = class Encipher
             if @parse()
                 if @encrypted
                     @gui.input "Enter decryption key", (key)=>
-                        @decrypt key, (error)=>
-                            @gui.alert "Decrypt result #{error}"
+                        @decrypt key, (success)=>
+                            if success
+                                @gui.hide()
+                            else
+                                @gui.alert "Invalid key"
                 else
                     if @text
                         @gui.input "Enter encryption key", (key)=>
                             @encrypt key, (error)=>
-                                @gui.alert "Encrypt result #{error}"
+                                if not error
+                                    @gui.hide()
+                                else
+                                    @gui.alert error.message
                     else
                         @gui.alert "Message is empty"
             else
