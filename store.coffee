@@ -45,7 +45,7 @@ allowCrossDomain = (req, res, next)->
    next()
 
 @loadHash = (guid, callback)->
-    if hash
+    if guid
         Message.findOne {guid}, (err, msg)->
             callback(err, msg and msg.body )
     else
