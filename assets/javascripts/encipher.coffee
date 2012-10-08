@@ -46,6 +46,7 @@ GUI = (encipher)-> """
     color:#fff;
     font-family:Arial, Helvetica, sans-serif; 
     text-decoration: none;
+    text-align: left;
 }
 
 .encipher-message {
@@ -127,9 +128,9 @@ GUI = (encipher)-> """
             <input type='password' class='encipher-key-input encipher-key-pass'/>
             <div class='encipher-key-mode'></div>
         </div>
-        <div class='encipher-message'></div>
-        <div class='encipher-it'>Encipher It</div>
     </div>
+    <div class='encipher-message'></div>
+    <div class='encipher-it'>Encipher It</div>
 </div>
 """
 
@@ -151,31 +152,41 @@ class Popup
                 el.removeClass('encipher-key-mode-plain')
             else
                 el.addClass('encipher-key-mode-plain')
-
-        # Keyboard events
-        jQuery('.encipher-key-input').focus().keyup (e)=>
-            score = @score()
-            jQuery('.encipher-message').html(score)
-            if @key() != ''
-                jQuery('.encipher-it').show()
-            else
-                jQuery('.encipher-it').hide()
-            if (e.which == 27) then return @hide()
-            if (e.which == 13 and enabled) then return @callback()
-
         jQuery('.encipher-close').click => @hide()
 
+    refresh: ->
+        if @key() != ''
+            jQuery('.encipher-it').show()
+        else
+            jQuery('.encipher-it').hide()
+
     # Enter key
-    input: ( title, callback ) ->
+    input: ( title, button, callback ) ->
+        jQuery('.encipher-key-input').focus().val("").unbind().keyup (e)=>
+            score = @score()
+            jQuery('.encipher-message').html(score)
+            if (e.which == 27) then return @hide()
+            if (e.which == 13 and @key()) then return callback(@key())
+            @refresh()
+
+        jQuery('.encipher-message').html("")
         jQuery('.encipher-title').html( title )
-        jQuery('.encipher-it').unbind().bind 'click', => callback(@key())
+        jQuery('.encipher-it').html( button ).unbind().bind 'click', => callback(@key())
         jQuery('.encipher-tab-key').show()
+        @refresh()
         @frame.show()
 
     # Show alert
-    alert: ( message ) ->
-        jQuery('.encipher-message').html( message )
+    alert: ( message, title ) ->
+        jQuery('.encipher-tab-key').hide()
+        jQuery('.encipher-title').html( title )
+        @message message
+        @refresh()
         @frame.show()
+
+    # Show alert
+    message: ( message ) ->
+        jQuery('.encipher-message').html( message )
 
     # Hide dialog
     hide: =>
@@ -268,11 +279,12 @@ window.Encipher = class Encipher
         traverseBody = (body) ->
             body.each -> traverse this
             body.find("iframe").each ->
-                iframe = $(this).get(0)
+                iframe = jQuery(this).get(0)
                 if iframe.src.indexOf(location.protocol + '//' + location.host) == 0 or iframe.src.indexOf('about:blank') == 0 or iframe.src == ''
                     try
                         traverseBody( jQuery(this).contents().find('body') )
                     catch e
+                        # pass
         traverseBody jQuery('body')
         return [nodes,texts]
 
@@ -317,7 +329,7 @@ window.Encipher = class Encipher
         pbkdf2 = new PBKDF2( password, salt, 1000, 32 )
         pbkdf2.deriveKey(
             (per)=>
-                @gui and @gui.alert( "Generating key: #{Math.floor(per)}%" )
+                @gui and @gui.message( "Generating key: #{Math.floor(per)}%" )
             ,
             (key)=>
                 # Put key to cache
@@ -388,20 +400,20 @@ window.Encipher = class Encipher
         else
             if @parse()
                 if @encrypted
-                    @gui.input "Enter decryption key", (key)=>
+                    @gui.input "Enter decryption key", "Decipher It", (key)=>
                         @decrypt key, (success)=>
                             if success
                                 @gui.hide()
                             else
-                                @gui.alert "Invalid key"
+                                @gui.message "Invalid key"
                 else
                     if @text
-                        @gui.input "Enter encryption key", (key)=>
+                        @gui.input "Enter encryption key", "Encipher It", (key)=>
                             @encrypt key, (error)=>
                                 if not error
                                     @gui.hide()
                                 else
-                                    @gui.alert error.message
+                                    @gui.message error.message
                     else
                         @gui.alert "Message is empty"
             else
@@ -435,13 +447,13 @@ class ShortLinkFormat
     afterEncrypt: (message, cb)->
         body = @encipher.extractCipher( message )
         return cb(null, message) if not body
-        $.post @encipher.base + "/pub", {body}, (res)=>
+        jQuery.post @encipher.base + "/pub", {body}, (res)=>
             cb(null, message.replace( body, @encipher.base + '#'+res) )
 
     beforeDecrypt: (message, cb)->
         hash = @encipher.extractCipher( message )
         return cb(null, message) if not hash or hash[0] != '#'
-        $.post @encipher.base + "/pub", {hash:hash[1...]}, (res)=>
+        jQuery.post @encipher.base + "/pub", {hash:hash[1...]}, (res)=>
             cb(null, message.replace(hash, res) )
 
 # Format selector
