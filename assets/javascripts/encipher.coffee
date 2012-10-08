@@ -220,10 +220,6 @@ class Popup
         ['<span style="#c11b17">Very weak</span>','Weak','Moderate','Strong','Very strong'][strength-1]
 
 
-CRYPTO_HEADER="EnCt2"
-
-CRYPTO_FOOTER="IwEmS"
-
 # Main service class
 window.Encipher = class Encipher
 
@@ -231,13 +227,20 @@ window.Encipher = class Encipher
         @base ||= (window.location.protocol + '//' + window.location.host)
         @format = new Format(@)
         @cache = {}
+        basere = @base.replace(/([\:\.\/])/g,"\\$1")
+        @reHasCipher = new RegExp("(EnCt2|#{basere})")
+        @reGetCipher = [ new RegExp("(EnCt2.*IwEmS)"), new RegExp("(#{basere}[\#\?][0-9A-Fa-f]{40})") ]
+
+    hasCipher: (message)->
+        return false unless message
+        return (message or "").match(@reHasCipher)
 
     # Extract ciphered message or hash reference from the text
     extractCipher: (message)->
-        parts = (message or "").match /.*(EnCt2.*IwEmS).*/
-        return parts[1] if parts
-        parts = (message or "").match /.*(\#[0-9A-Fa-f]{40}).*/
-        return parts and parts[1]
+        for re in @reGetCipher
+            parts = (message or "").match re
+            return parts[1] if parts
+        return false
 
     # Traverse document and collect all encrypted blocks to collection
     findEncrypted: ->
@@ -255,19 +258,19 @@ window.Encipher = class Encipher
                 return 0
 
         # Traverse DOM and search for encoded block headers
-        traverse = (node) ->
+        traverse = (node) =>
             skip = 0
             # Text node
-            if node.nodeType == 3 and node.data.indexOf( CRYPTO_HEADER ) >= 0
+            if node.nodeType == 3 and @hasCipher(node.data)
                 elem = jQuery(node.parentNode)
-                skip = found( elem, elem.text() )
+                skip = found(elem, elem.text())
             else
                 # Element node
                 if (node.nodeType == 1 && !/(script|style)/i.test(node.tagName))
                     # Text area or input
                     if /(input|textarea)/i.test( node.tagName )
                         elem = jQuery(node)
-                        found( elem, elem.val() )
+                        found(elem, elem.val())
                     else
                         # Recursive traverse children
                         if node.childNodes
@@ -279,10 +282,10 @@ window.Encipher = class Encipher
         traverseBody = (body) ->
             body.each -> traverse this
             body.find("iframe").each ->
-                #iframe = jQuery(this).get(0)
-                #if iframe.src.indexOf(location.protocol + '//' + location.host) == 0 or iframe.src.indexOf('about:blank') == 0 or iframe.src == ''
                 try
-                    traverseBody( jQuery(this).contents().find('body') )
+                    iframe = jQuery(this).get(0)
+                    if iframe.src.indexOf(location.protocol + '//' + location.host) == 0 or iframe.src.indexOf('about:blank') == 0 or iframe.src == ''
+                        traverseBody( jQuery(this).contents().find('body') )
                 catch e
                     # pass
         traverseBody jQuery('body')
@@ -368,6 +371,7 @@ window.Encipher = class Encipher
                     success ||= res
                     next()
             else
+                @cache = {}
                 callback( success )
         next()
 
@@ -379,10 +383,10 @@ window.Encipher = class Encipher
             hmac = hex_hmac_sha1(key, @text )
             # Pad to to 256bit (reserved for sha256 hash)
             hmac += hmac[0...24]
-            cipher = CRYPTO_HEADER + hmac + salt + Aes.Ctr.encrypt( @text, key, 256) + CRYPTO_FOOTER
-            
+            cipher = hmac + salt + Aes.Ctr.encrypt( @text, key, 256)
             @format.afterEncrypt cipher, (err, cipher)=>
                 @updateNode @node, cipher
+                @cache = {}
                 callback( err )
 
     # Update text 
@@ -434,7 +438,7 @@ class LinkFormat
     constructor: (@encipher)->
 
     afterEncrypt: (message, callback) ->
-        callback( null, @encipher.base + '#' + message )
+        callback( null, "#{@encipher.base}\##{message}")
 
     beforeDecrypt: (message, callback) ->
         callback( null, message )
@@ -452,9 +456,10 @@ class ShortLinkFormat
 
     beforeDecrypt: (message, cb)->
         hash = @encipher.extractCipher( message )
-        return cb(null, message) if not hash or hash[0] != '#'
-        jQuery.post @encipher.base + "/pub", {hash:hash[1...]}, (res)=>
-            cb(null, message.replace(hash, res) )
+        return cb(null, message) if not hash or hash.indexOf( @encipher.base ) != 0
+        hash = hash[@encipher.base.length+1...]
+        jQuery.post @encipher.base + "/pub", {hash}, (res)=>
+            cb(null, res)
 
 # Format selector
 class Format
@@ -466,7 +471,7 @@ class Format
 
     # Format with with selected type
     afterEncrypt: (message, callback) ->
-        @selected.afterEncrypt(message, callback)
+        @selected.afterEncrypt("EnCt2#{message}IwEmS", callback)
 
     # Unpack all supported formats
     beforeDecrypt: (message, callback) ->
