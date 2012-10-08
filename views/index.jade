@@ -2,21 +2,27 @@ extends layout
 
 block contents
     #articles.section
-
-        #message.article(style="display: none;")
-            .articleBody.clear
-                h2 You got a ciphered message!
-                p To decode you need a password. Ask sender of the message if you don't know it.
-
-        #help.article
-            .articleBody.clear
-                p Encrypting email with Encipher.it is a simple way to protect your sensitive data. You can encrypt emails or text messages and only the recipient can decrypt it with correct password. Encipher.it integrated with google mail and many other web applications.
-                h3 
-                    a(href="/help#video") Click here to see demo
-                p
-                    | You can use this box below to encrypt and decrypt messages. Copy and paste text, then click&nbsp;
-                    a(href=def_bookmarklet)
-                        b Encipher It
+        -if(encrypted)
+            .article
+                .encipher-icon.encipher-close
+                .articleBody.clear
+                    h2 You got a ciphered message!
+                    p To decode you need a password. Ask sender of the message if you don't know it.
+        -else
+            .article
+                .encipher-icon.encipher-close
+                .articleBody.clear
+                    p
+                        | Use this page to encrypt and decrypt text messages.
+                    p 
+                        | Drag&nbsp;
+                        a.encipher.button(href=def_bookmarklet)
+                            b Encipher It
+                        | &nbsp;button to bookmarks and use it with any other site.&nbsp;
+                        a(href="/help#video")
+                            b.demo See quick demo video.
+                    p
+                        | You can send ciphered message to gmail, facebook or twitter as short link.
 
         #testbed.article
             .articleBody.clear
@@ -32,7 +38,7 @@ block contents
 
                 p
                     textarea#txt(style="text-wrap: unrestricted;", name="txtbdy", autofocus="autofocus")= cipher
-
+                p Encrypting email with Encipher.it is a simple way to protect your sensitive data. You can encrypt emails or text messages and only the recipient can decrypt it with correct password. Encipher.it integrated with google mail and many other web applications.
                 p
                     | This application use 
                     a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") Advanced Encryption Standard 

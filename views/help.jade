@@ -64,29 +64,28 @@ block contents
     #how.article
         .articleBody.clear
             p 
-              | Actually,&nbsp;
               a(href=def_bookmarklet) Encipher It
-              |  shortcut is javascript code snippet. It can be added to browser bookmarks and then injected to any web page on click.
-              | The code is requests password from the user, generates secure key, then encrypts/decrypts focused textarea on the web page. 
+              | &nbsp;is javascript code snippet. It can be injected to any web page by clicking on the bookmark.
+              | It ask for the password, generate secure key and encrypt or decrypt the text on the web page.
+              | Optionally, it can save encrypted text on the external server and provide short link for access.
             p
-              a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") AES 
-              | encryption with&nbsp;
-              a(href="http://en.wikipedia.org/wiki/PBKDF2", target="new", rel="nofollow") PBKDF2&nbsp;
-              | key generation is used.
-              | The text is encrypted and decrypted inside browser memory, without external server.
+              | We use&nbsp;
+              a(href="http://en.wikipedia.org/wiki/Advanced_Encryption_Standard",target="_new",rel="nofollow") AES
+              | &nbsp;encryption with&nbsp;
+              a(href="http://en.wikipedia.org/wiki/PBKDF2", target="new", rel="nofollow") PBKDF2
+              | &nbsp;key generation and&nbsp;
+              a(href="http://en.wikipedia.org/wiki/Hash-based_message_authentication_code", target="new", rel="nofollow") HMAC-SHA256
+              | &nbsp;digests.
             p
-              | The encrypted text can be formatted as link.&nbsp;
-              | Clicking on this link is just fast way to copy encrypted text into the site box for decryption. 
-              | I'ts useful for the users who not yet have bookmarklet or who on mobile device.
-            p
-              | Because of some encryption code still loaded from the server, be aware of &nbsp;
+              | The plain text and the key is managed inside browser memory and never passed by network.
+              | However, encryption code still loaded from the server. Be aware of &nbsp;
               a(href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack",rel="nofollow") man-in-the-middle 
               |  and 
               a(href="phishing") phising
               |  attacks.
               | For the safe use, ensure that site address is exactly&nbsp;
-              u(style="color: #EE5; font-size: 120%;") https://encipher.it
-              | &nbsp;("https" important!). If you see red alert, please stop use tool and send me a note.
+              b &nbsp;&nbsp; https://encipher.it &nbsp;&nbsp;
+              | &nbsp;("https" important!). If you see red alert, please stop using this tool and send me a note.
             p
               | The source code is available on&nbsp;
               a(href="https://github.com/ermakus/encipher.it") GitHub

@@ -106,7 +106,7 @@ GUI = (encipher)-> """
     padding-left:20px;
     margin-right: 4px;
     cursor: pointer;
-    color: white;
+    color:#0196E3;
     font-size: 14px;
     font-family:Arial, Helvetica, sans-serif; 
     background: url(#{encipher.base}/images/encrypt-white.png) no-repeat center left;

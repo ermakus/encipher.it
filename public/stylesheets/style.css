@@ -257,14 +257,13 @@ div.footer a.up{
 
 .button {
     display:inline-block;
-    color:#EEE;
+    color:#0196E3
     font-family:arial;
     font-size:15px;
     padding: 5px;
     text-decoration:none;
     padding-left: 40px;
 }.button:hover {
-    text-decoration:none;
 }.button:visited {
     color:#EEE;
 }
@@ -287,4 +286,26 @@ div.footer a.up{
 
 .twitter {
     background: url(/images/twitter.png) no-repeat 5px center;
+}
+
+
+.encipher-icon {
+    -moz-border-radius: 16px; 
+    -webkit-border-radius: 16px; 
+    border-radius: 16px;
+    display: inline-block;
+    float: right;
+    margin: 0;
+    padding: 4px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.encipher-icon:hover {
+    background-color: #355664;
+}
+
+.encipher-close {
+    background: url(/images/close-white.png) no-repeat center center;
 }
