@@ -177,9 +177,9 @@ class Popup
         @frame.show()
 
     # Show alert
-    alert: ( message, title ) ->
+    alert: ( message ) ->
         jQuery('.encipher-tab-key').hide()
-        jQuery('.encipher-title').html( title )
+        jQuery('.encipher-title').html("")
         @message message
         @refresh()
         @frame.show()
@@ -249,6 +249,8 @@ window.Encipher = class Encipher
 
         # Extract encoded block from element and put it to collection
         found = (elem,txt) =>
+            if elem.prop('tagName') == 'A'
+                elem = elem.parent()
             cipher = @extractCipher(txt.replace(/[\n> ]/g,''))
             if cipher
                 nodes.push elem
