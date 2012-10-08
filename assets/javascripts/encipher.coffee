@@ -279,12 +279,12 @@ window.Encipher = class Encipher
         traverseBody = (body) ->
             body.each -> traverse this
             body.find("iframe").each ->
-                iframe = jQuery(this).get(0)
-                if iframe.src.indexOf(location.protocol + '//' + location.host) == 0 or iframe.src.indexOf('about:blank') == 0 or iframe.src == ''
-                    try
-                        traverseBody( jQuery(this).contents().find('body') )
-                    catch e
-                        # pass
+                #iframe = jQuery(this).get(0)
+                #if iframe.src.indexOf(location.protocol + '//' + location.host) == 0 or iframe.src.indexOf('about:blank') == 0 or iframe.src == ''
+                try
+                    traverseBody( jQuery(this).contents().find('body') )
+                catch e
+                    # pass
         traverseBody jQuery('body')
         return [nodes,texts]
 
