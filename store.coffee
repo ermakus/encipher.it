@@ -44,9 +44,9 @@ allowCrossDomain = (req, res, next)->
    res.header 'Access-Control-Allow-Headers', 'Content-Type'
    next()
 
-@loadHash = (hash, callback)->
+@loadHash = (guid, callback)->
     if hash
-        Message.findOne {hash}, (err, msg)->
+        Message.findOne {guid}, (err, msg)->
             callback(err, msg and msg.body )
     else
         callback( null, null )
