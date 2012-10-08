@@ -1,13 +1,8 @@
 #!/bin/sh
 echo "Configure and deploy"
 set +e
-coffee -c -o ./public/javascripts ./assets/javascripts/inject*.coffee
-coffee -c ./settings.coffee
-coffee patch.coffee ./settings.js \
-      ./public/javascripts/inject.js \
-      ./public/javascripts/inject.v2.js \
-      ./public/javascripts/inject.v3.js \
-      ./public/javascripts/inject.v3-orig.js \
-      ./public/javascripts/inject.v4.js \
-      ./public/javascripts/inject.vios.js \
-      https://encipher.it
+npm install .
+COFFEE="./node_modules/coffee-script/bin/coffee"
+$COFFEE -c -o ./public/javascripts ./assets/javascripts/*.coffee
+$COFFEE -c ./settings.coffee
+$COFFEE patch.coffee ./settings.js ./public/javascripts/inject.js https://encipher.it

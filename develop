@@ -1,3 +1,0 @@
-#!/bin/sh
-coffee -c --watch -o ./public/javascripts inject.coffee inject.v2.coffee &
-coffee encipher.coffee
