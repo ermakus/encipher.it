@@ -229,7 +229,7 @@ window.Encipher = class Encipher
         @cache = {}
         basere = @base.replace(/([\:\.\/])/g,"\\$1")
         @reHasCipher = new RegExp("(EnCt2|#{basere})")
-        @reGetCipher = [ new RegExp("(EnCt2.*IwEmS)"), new RegExp("(#{basere}[\#\?][0-9A-Fa-f]{40})") ]
+        @reGetCipher = [ new RegExp("(EnCt2.*IwEmS)"), new RegExp("(#{basere}[\#\?][0-9A-Za-z]+)") ]
 
     hasCipher: (message)->
         return false unless message
@@ -344,8 +344,8 @@ window.Encipher = class Encipher
 
     # Decrypt text in DOM node
     decryptNode: (node, text, password, callback)->
-        @format.beforeDecrypt text, (err, text)=>
-            return callback(false) if err
+        @format.beforeDecrypt text, (error, text)=>
+            return callback(error, false) if error
             @updateNode node, text
             text = text.slice(5,text.length-5)
             hash = text[0...64]
@@ -357,9 +357,9 @@ window.Encipher = class Encipher
                 # Old version used hash - changed to more secure HMAC in latest
                 if hex_hmac_sha1(key, text ) == hmac or hash == Sha256.hash( text )
                     @updateNode node, text
-                    callback( true )
+                    callback( null, true )
                 else
-                    callback( false )
+                    callback( null, false )
  
     # Decrypt all encrypted nodes
     decrypt: (password, callback)->
@@ -368,13 +368,14 @@ window.Encipher = class Encipher
         # Trick for sequence of async calls
         next = =>
             if @nodes.length > i
-                @decryptNode @nodes[i], @texts[i], password, (res)=>
+                @decryptNode @nodes[i], @texts[i], password, (error, res)=>
+                    return callback( error, false ) if error
                     i += 1
                     success ||= res
                     next()
             else
                 @cache = {}
-                callback( success )
+                callback( null, success )
         next()
 
     # Encrypt text in input element
@@ -407,11 +408,14 @@ window.Encipher = class Encipher
             if @parse()
                 if @encrypted
                     @gui.input "Enter decryption key", "Decipher It", (key)=>
-                        @decrypt key, (success)=>
+                        @decrypt key, (error, success)=>
                             if success
                                 @gui.hide()
                             else
-                                @gui.message "Invalid key"
+                                if error
+                                    @gui.message error.message
+                                else
+                                    @gui.message "Invalid key"
                 else
                     if @text
                         @gui.input "Enter encryption key", "Encipher It", (key)=>
@@ -435,19 +439,9 @@ class TextFormat
     beforeDecrypt: (message, callback) ->
         callback( null, message )
 
-# Format encrypted text as self contained link
-class LinkFormat
-    constructor: (@encipher)->
-
-    afterEncrypt: (message, callback) ->
-        callback( null, "#{@encipher.base}?#{message}")
-
-    beforeDecrypt: (message, callback) ->
-        callback( null, message )
-
 # Format encrypted text as short link 
 # Ciphered text will be stored on the public remote server
-class ShortLinkFormat
+class LinkFormat
     constructor: (@encipher)->
 
     afterEncrypt: (message, cb)->
@@ -455,21 +449,24 @@ class ShortLinkFormat
         return cb(null, message) if not body
         jQuery.post @encipher.base + "/pub", {body}, (res)=>
             cb(null, message.replace( body, @encipher.base + '?'+res) )
+        .error ->
+            cb( new Error("Can't create link") )
 
     beforeDecrypt: (message, cb)->
-        hash = @encipher.extractCipher( message )
-        return cb(null, message) if not hash or hash.indexOf( @encipher.base ) != 0
-        hash = hash[@encipher.base.length+1...]
-        jQuery.post @encipher.base + "/pub", {hash}, (res)=>
+        url = @encipher.extractCipher( message )
+        return cb(null, message) if not url or url.indexOf( @encipher.base ) != 0
+        guid = url[@encipher.base.length+1...]
+        jQuery.post @encipher.base + "/pub", {guid}, (res)=>
             cb(null, res)
+        .error ->
+            cb( new Error("Can't expand link") )
 
 # Format selector
 class Format
     constructor: (@encipher)->
         @text  = new TextFormat(@encipher)
         @link  = new LinkFormat(@encipher)
-        @short = new ShortLinkFormat(@encipher)
-        @selected  = @short
+        @selected  = @link
 
     # Format with with selected type
     afterEncrypt: (message, callback) ->
@@ -477,8 +474,6 @@ class Format
 
     # Unpack all supported formats
     beforeDecrypt: (message, callback) ->
-        @text.beforeDecrypt message, (err, message)=>
+        @link.beforeDecrypt message, (err, message)=>
             return callback(err, message) if err
-            @link.beforeDecrypt message, (err, message)=>
-                return callback(err, message) if err
-                @short.beforeDecrypt message, callback
+            @text.beforeDecrypt message, callback

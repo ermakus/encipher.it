@@ -4,16 +4,37 @@ crypto   = require 'crypto'
 @db = db = mongoose.createConnection('localhost', 'encipher')
 
 GuidSchema = mongoose.Schema
+    _id: String
     counter: Number
-    stump: Date
+
+GuidSchema.statics.setup = (callback)->
+    # Init guid counter
+    @findOne {'_id':'messages'}, (error, guid)=>
+        return callback( error ) if error or (guid and guid.counter)
+        @update {'_id':'messages'}, '$set':{'counter':0}, {upsert:true}, (error, init)->
+            callback(error)
+
+GuidSchema.statics.next = (callback)->
+    @collection.findAndModify {'_id':'messages'}, {}, '$inc':{'counter':1}, {}, (error, guid)->
+        if error or not guid
+            callback( error )
+        else
+            buf = new Buffer(4)
+            buf.writeUInt32BE( guid.counter, 0 )
+            callback( null, buf.toString('base64').replace( /\=/g,'' ) )
 
 MessageSchema = mongoose.Schema
+    guid: String
     hash: String
     body: String
     stump: Date
 
-@Guid    = Guid    = db.model('Guid', GuidSchema )
-@Message = Message = db.model('Message', MessageSchema)
+Guid = db.model('Guid', GuidSchema )
+
+Guid.setup (error)->
+    console.log "Guid counter error", error.message if error
+
+Message = db.model('Message', MessageSchema)
 
 # CORS middleware
 allowCrossDomain = (req, res, next)->
@@ -41,9 +62,9 @@ allowCrossDomain = (req, res, next)->
     # Public store for encrypted messages
     app.post '/pub', allowCrossDomain, (req, res)->
         # If hash passed, then lookup body
-        hash = req.param('hash','')
-        if hash
-            Message.findOne {hash}, (err, msg)->
+        guid = req.param('guid','')
+        if guid
+            Message.findOne {guid}, (err, msg)->
                 if err
                     res.send( err.message, 500 )
                 else
@@ -61,13 +82,18 @@ allowCrossDomain = (req, res, next)->
                         res.send( err.message, 500 )
                     else
                         if msg
-                            res.send( hash )
+                            res.send( msg.guid )
                         else
-                            msg = new Message({hash,body})
-                            msg.save (err)->
+                            Guid.next (err, guid)->
+                                console.log "Save message", guid
                                 if err
                                     res.send( err.message, 500 )
                                 else
-                                    res.send( hash )
+                                    msg = new Message({hash,body,guid})
+                                    msg.save (err)->
+                                        if err
+                                            res.send( err.message, 500 )
+                                        else
+                                            res.send( guid )
             else
                 res.send("Invalid request", 500)
