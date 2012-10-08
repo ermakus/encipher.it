@@ -12,8 +12,7 @@ $ ->
     composer.click ->
         if composer.val() == 'Sample text'
               composer.val("")
-              #composer.unbind()
-
+              composer.unbind()
 
     # Copy to clipboard
     clip = new ZeroClipboard.Client()
@@ -42,19 +41,3 @@ $ ->
             name: "Click here to read encrypted message"
             link: composer.val()
         )
-
-    cipher = encipher.extractCipher('#'+window.location.hash)
-    if cipher
-        encipher.format.beforeDecrypt cipher, (err, cipher)->
-            if err
-                alert err.message
-            else
-                composer.val(cipher)
-                $('#message').show()
-                $('#help').hide()
-                clip.reposition()
-                encipher.startup()
-    else
-        composer.val('Sample text')
-
-

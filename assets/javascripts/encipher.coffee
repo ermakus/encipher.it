@@ -440,7 +440,7 @@ class LinkFormat
     constructor: (@encipher)->
 
     afterEncrypt: (message, callback) ->
-        callback( null, "#{@encipher.base}\##{message}")
+        callback( null, "#{@encipher.base}?#{message}")
 
     beforeDecrypt: (message, callback) ->
         callback( null, message )
@@ -454,7 +454,7 @@ class ShortLinkFormat
         body = @encipher.extractCipher( message )
         return cb(null, message) if not body
         jQuery.post @encipher.base + "/pub", {body}, (res)=>
-            cb(null, message.replace( body, @encipher.base + '#'+res) )
+            cb(null, message.replace( body, @encipher.base + '?'+res) )
 
     beforeDecrypt: (message, cb)->
         hash = @encipher.extractCipher( message )

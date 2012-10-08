@@ -1,6 +1,8 @@
 mongoose = require 'mongoose'
 crypto   = require 'crypto'
 
+@db = db = mongoose.createConnection('localhost', 'encipher')
+
 GuidSchema = mongoose.Schema
     counter: Number
     stump: Date
@@ -10,6 +12,9 @@ MessageSchema = mongoose.Schema
     body: String
     stump: Date
 
+@Guid    = Guid    = db.model('Guid', GuidSchema )
+@Message = Message = db.model('Message', MessageSchema)
+
 # CORS middleware
 allowCrossDomain = (req, res, next)->
    res.header 'Access-Control-Allow-Origin', '*'
@@ -18,11 +23,14 @@ allowCrossDomain = (req, res, next)->
    res.header 'Access-Control-Allow-Headers', 'Content-Type'
    next()
 
-exports.init = (app)->
+@loadHash = (hash, callback)->
+    if hash
+        Message.findOne {hash}, (err, msg)->
+            callback(err, msg and msg.body )
+    else
+        callback( null, null )
 
-    exports.db = db = mongoose.createConnection('localhost', 'encipher')
-    exports.Guid    = Guid    = db.model('Guid', GuidSchema )
-    exports.Message = Message = db.model('Message', MessageSchema)
+@init = (app)->
 
     db.on('error', console.error.bind(console, 'connection error:'))
 

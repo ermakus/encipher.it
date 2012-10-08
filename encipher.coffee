@@ -42,10 +42,21 @@ app.configure 'production', ->
 store.init(app)
 
 app.get '/', (req, res)->
-    res.render 'index', {
-        title: 'Encipher.it – encrypt text or email in one click'
-        def_bookmarklet: bookmarklet()
-    }
+    hash = req._parsedUrl.query
+    if hash
+        store.loadHash hash, (error, cipher)->
+            console.log "Hash", hash, "Body", cipher
+            res.render 'index',
+                title: 'You Got Encrypted Message'
+                cipher: cipher or (error and error.message)
+                encrypted: true
+                def_bookmarklet: bookmarklet()
+    else
+        res.render 'index',
+            title: 'Encipher.it – encrypt text or email in one click'
+            cipher: "Sample text"
+            encrypted: false
+            def_bookmarklet: bookmarklet()
 
 app.get '/help', (req, res)->
     res.render 'help', {
