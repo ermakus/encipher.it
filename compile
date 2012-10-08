@@ -6,4 +6,3 @@ COFFEE="./node_modules/coffee-script/bin/coffee"
 $COFFEE -c -o ./public/javascripts ./assets/javascripts/*.coffee
 $COFFEE -c ./settings.coffee
 $COFFEE patch.coffee ./settings.js ./public/javascripts/inject.js https://encipher.it
-sudo service keeper restart
