@@ -249,7 +249,7 @@ window.Encipher = class Encipher
 
         # Extract encoded block from element and put it to collection
         found = (elem,txt) =>
-            if elem.prop('tagName') == 'A'
+            if elem[0].nodeName.toLowerCase() == 'a'
                 elem = elem.parent()
             cipher = @extractCipher(txt.replace(/[\n> ]/g,''))
             if cipher
