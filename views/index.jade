@@ -31,10 +31,10 @@ block contents
                         a.encipher.button(href=def_bookmarklet)
                             b Encipher It
                     span.right
-                        a#copy.button(href='#',title="Copy to Clipboard") Copy
-                        a.gmail.button(href="#",title="Send to GMail") GMail
-                        a.facebook.button(href="#",title="Send to Facebook friend") Facebook
-                        a.twitter.button(href="#",title="Send to Twitter") Twitter
+                        a.cmd.plain.cipher.link#copy.button(href='#',title="Copy to Clipboard") Copy
+                        a.cmd.plain.cipher.link.gmail.button(href="#",title="Send to GMail") GMail
+                        a.cmd.link.facebook.button(href="#",title="Send to Facebook friend") Facebook
+                        a.cmd.link.twitter.button(href="#",title="Send to Twitter") Twitter
 
                 p
                     textarea#txt(style="text-wrap: unrestricted;", name="txtbdy", autofocus="autofocus")= cipher

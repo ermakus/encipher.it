@@ -1,11 +1,12 @@
-window.encipher = new Encipher()
-
 window.fbAsyncInit = ->
     FB.init
         appId:'159179810783818'
     FB.XFBML.parse(document.getElementById('like'))
 
-$ ->
+$(document).ready ->
+
+    window.encipher = new Encipher()
+
     # Composer box
     composer = $('#txt')
 
@@ -30,6 +31,15 @@ $ ->
     $('.close').click ->
         $(this).parent().remove()
         clip.reposition()
+
+    window.encipher.success = (mode, cipher)->
+        $('.cmd').hide()
+        $('.' + mode).show()
+        clip.reposition()
+
+    $('.cmd').hide()
+    $('.plain').show()
+    clip.reposition()
 
     # Send to socials
     $('.gmail').click ->

@@ -551,6 +551,8 @@ window.Encipher = class Encipher
                     @gui.input "Enter decryption key", "Decipher It", (key)=>
                         @decrypt key, (error, success)=>
                             if success
+                                if @success
+                                    @success("plain")
                                 @gui.hide()
                             else
                                 if error
@@ -578,7 +580,9 @@ window.Encipher = class Encipher
                                                         else
                                                             @updateNode @node, cipher
                                                             @gui.hide()
+                                                            @success("link", cipher) if @success
                                         else
+                                            @success("cipher", cipher) if @success
                                             @gui.hide()
                     else
                         @gui.alert "Message is empty"
