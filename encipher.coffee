@@ -42,7 +42,7 @@ app.configure 'production', ->
 store.init(app)
 
 app.get '/', (req, res)->
-    parts = req._parsedUrl.query.match /(^[A-Za-z0-9]+)/
+    parts = (req._parsedUrl.query or "").match /(^[A-Za-z0-9]+)/
     if parts
         store.loadHash parts[0], (error, cipher)->
             console.log "Hash", parts[0], "Body", cipher
