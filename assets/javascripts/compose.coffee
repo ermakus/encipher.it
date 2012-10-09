@@ -27,7 +27,7 @@ $ ->
     $(window).resize ->
         clip.reposition()
 
-    $('.encipher-close').click ->
+    $('.close').click ->
         $(this).parent().remove()
         clip.reposition()
 
