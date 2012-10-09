@@ -431,13 +431,13 @@ window.Encipher = class Encipher
         # Check for gmail first
         # Rich formatting
         node = jQuery('iframe.editable:visible').contents().find('body')
-        if node.length then return [node, node.text()]
+        if node.length then return [node, node.html()]
         # Plain textarea
         node = jQuery('textarea[form=nosend]:visible')
         if node.length then return [node, node.val()]
         # Yahoo mail
         node = jQuery('iframe[name=compArea_test_]').contents().find('body')
-        if node.length then return [node, node.text()]
+        if node.length then return [node, node.html()]
         # Outlook web access or own site
         node = jQuery('textarea[name=txtbdy]')
         if node.length == 1 then return [node, node.val()]
@@ -530,7 +530,7 @@ window.Encipher = class Encipher
         if node.is('textarea')
             node.val( value )
         else
-            node.html( value.replace(/<(?:.|\n)*?>/gm, '').replace(/\n/g,'<br/>') )
+            node.html( value.replace(/\n/g,'<br/>') )
 
     # Unpack all supported formats
     unpack: (message, callback) ->
