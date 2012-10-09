@@ -27,6 +27,10 @@ $ ->
     $(window).resize ->
         clip.reposition()
 
+    $('.encipher-close').click ->
+        $(this).parent().remove()
+        clip.reposition()
+
     # Send to socials
     $('.gmail').click ->
         window.open "https://mail.google.com/mail/?view=cm&ui=2&tf=0&fs=1&to=&su=" +

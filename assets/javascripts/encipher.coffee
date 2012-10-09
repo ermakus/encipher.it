@@ -74,6 +74,14 @@ GUI = (encipher)-> """
     background: url(#{encipher.base}/images/settings-white.png) no-repeat center center;
 }
 
+.encipher-tab-settings {
+    position: absolute;
+    top: 20px;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+}
+
 .encipher-close {
     background: url(#{encipher.base}/images/close-white.png) no-repeat center center;
 }
@@ -154,13 +162,34 @@ GUI = (encipher)-> """
     </div>
     <div class='encipher-tab encipher-tab-settings'>
         <div class='encipher-text encipher-option'>Convert encrypted text into short link?</div>
-        <div class='encipher-text encipher-option'><input type='checkbox'>&nbsp;Remeber for this site</div>
+        <div class='encipher-text encipher-option'><input type='checkbox' class='encipher-always'>&nbsp;Do not ask next time</div>
         <div class='encipher-link encipher-no'>No</div>
         <div class='encipher-link encipher-yes'>Yes</div>
     </div>
     <div class='encipher-text encipher-message'></div>
 </div>
 """
+
+# Set and get cookie - used to save user settings
+setCookie = (name, value, days)->
+    if (days)
+        date = new Date()
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000))
+        expires = "; expires=" + date.toGMTString()
+    else
+        expires = ""
+    document.cookie = name + "=" + value + expires + "; path=/";
+
+getCookie = (c_name)->
+    if document.cookie.length > 0
+        c_start = document.cookie.indexOf(c_name + "=")
+        if (c_start != -1)
+            c_start = c_start + c_name.length + 1
+            c_end = document.cookie.indexOf(";", c_start)
+            if (c_end == -1)
+                c_end = document.cookie.length
+            return unescape(document.cookie.substring(c_start, c_end))
+    return ""
 
 # Popup dialog
 class Popup
@@ -182,7 +211,7 @@ class Popup
                 el.addClass('encipher-key-mode-plain')
         jQuery('.encipher-close').click => @hide()
         jQuery('.encipher-settings').click =>
-            @settings =>
+            @settings true, =>
                 jQuery('.encipher-tab').hide()
                 jQuery('.encipher-tab-key').show()
 
@@ -217,16 +246,29 @@ class Popup
         @frame.show()
 
     # settings
-    settings: ( callback ) ->
+    settings: ( show, callback ) ->
         jQuery('.encipher-tab').hide()
         jQuery('.encipher-tab-settings').show()
-        if callback
-            jQuery('.encipher-yes').unbind().bind 'click', =>
-                @encipher.format.selected = @encipher.format.link
-                callback( true )
-            jQuery('.encipher-no').unbind().bind 'click', =>
-                @encipher.format.selected = @encipher.format.text
-                callback( false )
+        mode = getCookie('encipher-link')
+        check = $('.encipher-always')
+        if mode in ['yes','no']
+            check.attr('checked','checked')
+        if mode == 'yes' and not show
+            return callback( true )
+        if mode == 'no' and not show
+            return callback( false )
+        jQuery('.encipher-yes').unbind().bind 'click', =>
+            if check.is(':checked')
+                setCookie 'encipher-link', 'yes'
+            else
+                setCookie 'encipher-link', 'ask'
+            callback( true )
+        jQuery('.encipher-no').unbind().bind 'click', =>
+            if check.is(':checked')
+                setCookie 'encipher-link', 'no'
+            else
+                setCookie 'encipher-link', 'ask'
+            callback( false )
         @message("")
         @refresh()
         @frame.show()
@@ -332,8 +374,6 @@ window.Encipher = class Encipher
         @format =
             text : new TextFormat(@base)
             link : new LinkFormat(@base)
-        # Selected format
-        @format.selected  = @format.link
 
     # Traverse document and collect all encrypted blocks to collection
     findEncrypted: ->
@@ -527,7 +567,7 @@ window.Encipher = class Encipher
                                     @gui.message error.message
                                 else
                                     # Convert to short link, if needed
-                                    @gui.settings (ok)=>
+                                    @gui.settings false, (ok)=>
                                         if ok
                                             @format.text.unpack cipher, (error, cipher)=>
                                                 if error
