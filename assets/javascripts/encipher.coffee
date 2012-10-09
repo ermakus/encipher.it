@@ -96,39 +96,16 @@ GUI = (encipher)-> """
     background: url(#{encipher.base}/images/unmasked.png) no-repeat center center !important;
 }
 
-.encipher-it {
+.encipher-link {
     position: absolute;
-    right: 5px;
-    bottom: 3px;
-    display: inline-block;
-    margin: 0;
-    padding: 3px;
-    padding-left:20px;
-    margin-right: 4px;
-    cursor: pointer;
-    color:#0196E3;
-    font-size: 14px;
-    font-family:Arial, Helvetica, sans-serif; 
-    background: url(#{encipher.base}/images/encrypt-white.png) no-repeat center left;
-    font-weight: bold;
-}
-
-.encipher-it:hover {
-    text-decoration: underline;
-}
-
-.encipher-remember {
-    padding-top: 30px;
-    float: left;
-}
-
-.encipher-btn {
+    bottom: 5px;
     text-align: right;
     display: block;
     float: right;
     display: inline-block;
     margin: 0;
-    padding: 5px;
+    padding: 0;
+    padding-left: 20px;
     cursor: pointer;
     color:#0196E3;
     font-size: 14px;
@@ -136,8 +113,23 @@ GUI = (encipher)-> """
     font-weight: bold;
 }
 
-.encipher-btn:hover {
+.encipher-link:hover {
     text-decoration: underline;
+}
+
+.encipher-it {
+    background: url(#{encipher.base}/images/encrypt-white.png) no-repeat center left;
+    right: 5px;
+}
+
+.encipher-yes {
+    background: url(#{encipher.base}/images/settings-white.png) no-repeat center left;
+    right: 5px;
+}
+
+.encipher-no {
+    background: url(#{encipher.base}/images/close-white.png) no-repeat center left;
+    right: 85px;
 }
 
 .encipher-option {
@@ -149,8 +141,8 @@ GUI = (encipher)-> """
 </style>
 
 <div class='encipher-popup'>
+    <div class='encipher-icon encipher-close'></div>
     <div class='encipher-tab encipher-tab-key'>
-        <div class='encipher-icon encipher-close'></div>
         <div class='encipher-icon encipher-settings'></div>
         <div class='encipher-text encipher-title'></div>
         <div class='encipher-key'>
@@ -158,14 +150,13 @@ GUI = (encipher)-> """
             <input type='password' class='encipher-key-input encipher-key-pass'/>
             <div class='encipher-key-mode'></div>
         </div>
-        <div class='encipher-it'>Encipher It</div>
+        <div class='encipher-link encipher-it'>Encipher It</div>
     </div>
     <div class='encipher-tab encipher-tab-settings'>
-        <div class='encipher-icon encipher-close'></div>
         <div class='encipher-text encipher-option'>Convert encrypted text into short link?</div>
         <div class='encipher-text encipher-option'><input type='checkbox'>&nbsp;Remeber for this site</div>
-        <div class='encipher-btn encipher-no'>No</div>
-        <div class='encipher-btn encipher-yes'>Yes</div>
+        <div class='encipher-link encipher-no'>No</div>
+        <div class='encipher-link encipher-yes'>Yes</div>
     </div>
     <div class='encipher-text encipher-message'></div>
 </div>
