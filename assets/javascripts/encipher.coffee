@@ -528,7 +528,7 @@ window.Encipher = class Encipher
     # Update text 
     updateNode: (node, value)->
         if node.is('textarea')
-            node.val( value )
+            node.val( value.replace(/\<\/div\>/,'\n').replace(/<(?:.|\n)*?>/gm, ''))
         else
             node.html( value.replace(/\n/g,'<br/>') )
 
