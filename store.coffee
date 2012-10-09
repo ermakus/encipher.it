@@ -11,7 +11,7 @@ GuidSchema.statics.setup = (callback)->
     # Init guid counter
     @findOne {'_id':'messages'}, (error, guid)=>
         return callback( error ) if error or (guid and guid.counter)
-        @update {'_id':'messages'}, '$set':{'counter':0}, {upsert:true}, (error, init)->
+        @update {'_id':'messages'}, '$set':{'counter':1}, {upsert:true}, (error, init)->
             callback(error)
 
 GuidSchema.statics.next = (callback)->
@@ -21,7 +21,7 @@ GuidSchema.statics.next = (callback)->
         else
             buf = new Buffer(4)
             buf.writeUInt32BE( guid.counter, 0 )
-            callback( null, buf.toString('base64').replace( /\=/g,'' ) )
+            callback( null, buf.toString('base64').replace( /(^A*)|\=/g,'' ) )
 
 MessageSchema = mongoose.Schema
     guid: String

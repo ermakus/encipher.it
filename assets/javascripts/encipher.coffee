@@ -39,7 +39,7 @@ GUI = (encipher)-> """
     border-radius: 4px;
 }
 
-.encipher-title, .encipher-message {
+.encipher-text {
     display: inline-block;
     padding: 5px;
     font-size: 14px;
@@ -110,27 +110,64 @@ GUI = (encipher)-> """
     font-size: 14px;
     font-family:Arial, Helvetica, sans-serif; 
     background: url(#{encipher.base}/images/encrypt-white.png) no-repeat center left;
+    font-weight: bold;
 }
 
 .encipher-it:hover {
     text-decoration: underline;
 }
 
+.encipher-remember {
+    padding-top: 30px;
+    float: left;
+}
+
+.encipher-btn {
+    text-align: right;
+    display: block;
+    float: right;
+    display: inline-block;
+    margin: 0;
+    padding: 5px;
+    cursor: pointer;
+    color:#0196E3;
+    font-size: 14px;
+    font-family:Arial, Helvetica, sans-serif; 
+    font-weight: bold;
+}
+
+.encipher-btn:hover {
+    text-decoration: underline;
+}
+
+.encipher-option {
+    float: left;
+    clear: both;
+    padding-bottom: 10px;
+}
+
 </style>
 
 <div class='encipher-popup'>
-    <div class='encipher-title'></div>
-    <div class='encipher-icon encipher-close'></div>
-    <div class='encipher-icon encipher-settings'></div>
     <div class='encipher-tab encipher-tab-key'>
+        <div class='encipher-icon encipher-close'></div>
+        <div class='encipher-icon encipher-settings'></div>
+        <div class='encipher-text encipher-title'></div>
         <div class='encipher-key'>
             <input type='text' class='encipher-key-input encipher-key-plain' style='display: none;'/>
             <input type='password' class='encipher-key-input encipher-key-pass'/>
             <div class='encipher-key-mode'></div>
         </div>
+        <div class='encipher-it'>Encipher It</div>
     </div>
-    <div class='encipher-message'></div>
-    <div class='encipher-it'>Encipher It</div>
+    <div class='encipher-tab encipher-tab-settings'>
+        <div class='encipher-icon encipher-close'></div>
+        <div class='encipher-text encipher-option'>Convert encrypted text into short link?</div>
+        <div class='encipher-text encipher-option'><input type='checkbox'>&nbsp;Remeber for this site</div>
+        <div class='encipher-btn encipher-no'>No</div>
+        <div class='encipher-btn encipher-yes'>Yes</div>
+    </div>
+    <div class='encipher-text encipher-message'></div>
 </div>
 """
 
@@ -153,6 +190,10 @@ class Popup
             else
                 el.addClass('encipher-key-mode-plain')
         jQuery('.encipher-close').click => @hide()
+        jQuery('.encipher-settings').click =>
+            @settings =>
+                jQuery('.encipher-tab').hide()
+                jQuery('.encipher-tab-key').show()
 
     refresh: ->
         if @key() != ''
@@ -168,19 +209,34 @@ class Popup
             if (e.which == 27) then return @hide()
             if (e.which == 13 and @key()) then return callback(@key())
             @refresh()
-
-        jQuery('.encipher-message').html("")
         jQuery('.encipher-title').html( title )
-        jQuery('.encipher-it').html( button ).unbind().bind 'click', => callback(@key())
+        jQuery('.encipher-tab').hide()
         jQuery('.encipher-tab-key').show()
+        jQuery('.encipher-it').html( button ).unbind().bind 'click', => callback(@key())
+        @message("")
         @refresh()
         @frame.show()
 
     # Show alert
     alert: ( message ) ->
-        jQuery('.encipher-tab-key').hide()
+        jQuery('.encipher-tab').hide()
         jQuery('.encipher-title').html("")
         @message message
+        @refresh()
+        @frame.show()
+
+    # settings
+    settings: ( callback ) ->
+        jQuery('.encipher-tab').hide()
+        jQuery('.encipher-tab-settings').show()
+        if callback
+            jQuery('.encipher-yes').unbind().bind 'click', =>
+                @encipher.format.selected = @encipher.format.link
+                callback( true )
+            jQuery('.encipher-no').unbind().bind 'click', =>
+                @encipher.format.selected = @encipher.format.text
+                callback( false )
+        @message("")
         @refresh()
         @frame.show()
 
@@ -220,27 +276,73 @@ class Popup
         ['<span style="#c11b17">Very weak</span>','Weak','Moderate','Strong','Very strong'][strength-1]
 
 
+# Format encrypted as plain text
+class TextFormat
+    constructor: (@base) ->
+        @HAS = /EnCt2/
+        @EXTRACT = /(EnCt2.*IwEmS)/
+
+    hasCipher: (message)->
+        return false unless message
+        return (message or "").match @HAS
+
+    # Extract ciphered message
+    extractCipher: (message)->
+        parts = (message or "").replace(/[\n> ]/g,'').match @EXTRACT
+        if parts
+            return parts[1]
+        else
+            return false
+
+    pack: (message, callback) ->
+        callback( null, message.match(/.{0,80}/g).join('\n') + "\nEncrypted by " + @base )
+
+    unpack: (message, callback) ->
+        message = @extractCipher(message)
+        if message
+            callback( null, message )
+        else
+            callback( new Error("Encrypted message not found" ) )
+
+# Format encrypted text as short link 
+# Ciphered text will be stored on the public remote server
+class LinkFormat extends TextFormat
+
+    constructor: (@base)->
+        base = base.replace(/([\:\.\/])/g,"\\$1")
+        @HAS = new RegExp("#{base}")
+        @EXTRACT = new RegExp("(#{base}\\?[0-9A-Za-z]+)")
+
+    pack: (message, cb)->
+        jQuery.post @base + "/pub", {body:message}, (guid)=>
+            cb(null, @base + '?'+guid )
+        .error ->
+            cb( new Error("Can't create link") )
+
+    unpack: (message, cb)->
+        url = @extractCipher( message )
+        return cb(null, message) if not url
+        console.log url
+        guid = url[@base.length+1...]
+        jQuery.post @base + "/pub", {guid}, (res)=>
+            cb(null, res)
+        .error ->
+            cb( new Error("Can't expand link") )
+
+
 # Main service class
 window.Encipher = class Encipher
 
     constructor: (@base) ->
         @base ||= (window.location.protocol + '//' + window.location.host)
-        @format = new Format(@)
         @cache = {}
-        basere = @base.replace(/([\:\.\/])/g,"\\$1")
-        @reHasCipher = new RegExp("(EnCt2|#{basere})")
-        @reGetCipher = [ new RegExp("(EnCt2.*IwEmS)"), new RegExp("(#{basere}[\#\?][0-9A-Za-z]+)") ]
 
-    hasCipher: (message)->
-        return false unless message
-        return (message or "").match(@reHasCipher)
-
-    # Extract ciphered message or hash reference from the text
-    extractCipher: (message)->
-        for re in @reGetCipher
-            parts = (message or "").match re
-            return parts[1] if parts
-        return false
+        # Encrypted text formatters
+        @format =
+            text : new TextFormat(@base)
+            link : new LinkFormat(@base)
+        # Selected format
+        @format.selected  = @format.link
 
     # Traverse document and collect all encrypted blocks to collection
     findEncrypted: ->
@@ -251,7 +353,7 @@ window.Encipher = class Encipher
         found = (elem,txt) =>
             if elem[0].nodeName.toLowerCase() == 'a'
                 elem = elem.parent()
-            cipher = @extractCipher(txt.replace(/[\n> ]/g,''))
+            cipher = @format.text.extractCipher(txt) or @format.link.extractCipher(txt)
             if cipher
                 nodes.push elem
                 texts.push cipher
@@ -263,7 +365,7 @@ window.Encipher = class Encipher
         traverse = (node) =>
             skip = 0
             # Text node
-            if node.nodeType == 3 and @hasCipher(node.data)
+            if node.nodeType == 3 and (@format.text.hasCipher(node.data) or @format.link.hasCipher(node.data))
                 elem = jQuery(node.parentNode)
                 skip = found(elem, elem.text())
             else
@@ -344,7 +446,7 @@ window.Encipher = class Encipher
 
     # Decrypt text in DOM node
     decryptNode: (node, text, password, callback)->
-        @format.beforeDecrypt text, (error, text)=>
+        @unpack text, (error, text)=>
             return callback(error, false) if error
             @updateNode node, text
             text = text.slice(5,text.length-5)
@@ -387,10 +489,11 @@ window.Encipher = class Encipher
             # Pad to to 256bit (reserved for sha256 hash)
             hmac += hmac[0...24]
             cipher = hmac + salt + Aes.Ctr.encrypt( @text, key, 256)
-            @format.afterEncrypt cipher, (err, cipher)=>
-                @updateNode @node, cipher
+            @format.text.pack "EnCt2#{cipher}IwEmS", (error, cipher)=>
+                if not error
+                    @updateNode @node, cipher
                 @cache = {}
-                callback( err )
+                callback( error, cipher )
 
     # Update text 
     updateNode: (node, value)->
@@ -399,13 +502,21 @@ window.Encipher = class Encipher
         else
             node.html( value.replace /\n/g,'<br/>' )
 
+    # Unpack all supported formats
+    unpack: (message, callback) ->
+        @format.link.unpack message, (err, message)=>
+            return callback(err, message) if err
+            @format.text.unpack message, callback
+
     # Called when injected by bookmarklet
     startup: ->
         @gui ||= new Popup(@)
         if @gui.isVisible()
             @gui.hide()
         else
+            # Pare DOM
             if @parse()
+                # If encrypted message found, decrypt
                 if @encrypted
                     @gui.input "Enter decryption key", "Decipher It", (key)=>
                         @decrypt key, (error, success)=>
@@ -417,63 +528,30 @@ window.Encipher = class Encipher
                                 else
                                     @gui.message "Invalid key"
                 else
+                    # If input area found, encrypt
                     if @text
                         @gui.input "Enter encryption key", "Encipher It", (key)=>
-                            @encrypt key, (error)=>
-                                if not error
-                                    @gui.hide()
-                                else
+                            @encrypt key, (error, cipher)=>
+                                if error
                                     @gui.message error.message
+                                else
+                                    # Convert to short link, if needed
+                                    @gui.settings (ok)=>
+                                        if ok
+                                            @format.text.unpack cipher, (error, cipher)=>
+                                                if error
+                                                    @gui.message error.message
+                                                else
+                                                    @format.link.pack (cipher), (error, cipher)=>
+                                                        if error
+                                                            @gui.message error.message
+                                                        else
+                                                            @updateNode @node, cipher
+                                                            @gui.hide()
+                                        else
+                                            @gui.hide()
                     else
                         @gui.alert "Message is empty"
             else
                 @gui.alert "Message not found"
 
-# Format encrypted as plain text
-class TextFormat
-    constructor: (@encipher)->
-
-    afterEncrypt: (message, callback) ->
-        callback( null, message.match(/.{0,80}/g).join('\n') + "\nEncrypted by " + @encipher.base )
-
-    beforeDecrypt: (message, callback) ->
-        callback( null, message )
-
-# Format encrypted text as short link 
-# Ciphered text will be stored on the public remote server
-class LinkFormat
-    constructor: (@encipher)->
-
-    afterEncrypt: (message, cb)->
-        body = @encipher.extractCipher( message )
-        return cb(null, message) if not body
-        jQuery.post @encipher.base + "/pub", {body}, (res)=>
-            cb(null, message.replace( body, @encipher.base + '?'+res) )
-        .error ->
-            cb( new Error("Can't create link") )
-
-    beforeDecrypt: (message, cb)->
-        url = @encipher.extractCipher( message )
-        return cb(null, message) if not url or url.indexOf( @encipher.base ) != 0
-        guid = url[@encipher.base.length+1...]
-        jQuery.post @encipher.base + "/pub", {guid}, (res)=>
-            cb(null, res)
-        .error ->
-            cb( new Error("Can't expand link") )
-
-# Format selector
-class Format
-    constructor: (@encipher)->
-        @text  = new TextFormat(@encipher)
-        @link  = new LinkFormat(@encipher)
-        @selected  = @link
-
-    # Format with with selected type
-    afterEncrypt: (message, callback) ->
-        @selected.afterEncrypt("EnCt2#{message}IwEmS", callback)
-
-    # Unpack all supported formats
-    beforeDecrypt: (message, callback) ->
-        @link.beforeDecrypt message, (err, message)=>
-            return callback(err, message) if err
-            @text.beforeDecrypt message, callback
