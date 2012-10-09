@@ -42,10 +42,10 @@ app.configure 'production', ->
 store.init(app)
 
 app.get '/', (req, res)->
-    hash = req._parsedUrl.query
-    if hash
-        store.loadHash hash, (error, cipher)->
-            console.log "Hash", hash, "Body", cipher
+    parts = req._parsedUrl.query.match /(^[A-Za-z0-9]+)/
+    if parts
+        store.loadHash parts[0], (error, cipher)->
+            console.log "Hash", parts[0], "Body", cipher
             res.render 'index',
                 title: 'You Got Encrypted Message'
                 cipher: cipher or (error and error.message)

@@ -1,11 +1,11 @@
+window.encipher = new Encipher()
+
 window.fbAsyncInit = ->
     FB.init
         appId:'159179810783818'
     FB.XFBML.parse(document.getElementById('like'))
 
 $(document).ready ->
-
-    window.encipher = new Encipher()
 
     # Composer box
     composer = $('#txt')
