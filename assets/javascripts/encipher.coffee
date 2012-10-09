@@ -249,8 +249,10 @@ class Popup
     settings: ( show, callback ) ->
         jQuery('.encipher-tab').hide()
         jQuery('.encipher-tab-settings').show()
+        @message("")
+        @refresh()
         mode = getCookie('encipher-link')
-        check = $('.encipher-always')
+        check = jQuery('.encipher-always')
         if mode in ['yes','no']
             check.attr('checked','checked')
         if mode == 'yes' and not show
@@ -269,9 +271,6 @@ class Popup
             else
                 setCookie 'encipher-link', 'ask'
             callback( false )
-        @message("")
-        @refresh()
-        @frame.show()
 
     # Show alert
     message: ( message ) ->
