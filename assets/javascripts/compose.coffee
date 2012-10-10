@@ -6,13 +6,6 @@ window.fbAsyncInit = ->
     FB.XFBML.parse(document.getElementById('like'))
 
 
-hasFlash = ->
-    try
-        return true if new ActiveXObject('ShockwaveFlash.ShockwaveFlash')
-    catch e
-        return (navigator.mimeTypes and navigator.mimeTypes["application/x-shockwave-flash"] != undefined)
-    return false
-
 $(document).ready ->
 
     # Composer box
@@ -23,7 +16,7 @@ $(document).ready ->
               composer.val("")
               composer.unbind()
 
-    if hasFlash()
+    if FlashDetect.installed
         # Copy to clipboard
         clip = new ZeroClipboard.Client()
         clip.glue('copy','copyholder')
@@ -35,7 +28,6 @@ $(document).ready ->
         clip.addEventListener 'onMouseDown', (client)->
             clip.setText( composer.val() )
     else
-        alert "No flash"
         $('#copyholder').click ->
             window.prompt "Copy to clipboard: Ctrl+C, Enter", composer.val()
 
