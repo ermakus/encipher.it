@@ -5,6 +5,14 @@ window.fbAsyncInit = ->
         appId:'159179810783818'
     FB.XFBML.parse(document.getElementById('like'))
 
+
+hasFlash = ->
+    try
+        return true if new ActiveXObject('ShockwaveFlash.ShockwaveFlash')
+    catch e
+        return (navigator.mimeTypes and navigator.mimeTypes["application/x-shockwave-flash"] != undefined)
+    return false
+
 $(document).ready ->
 
     # Composer box
@@ -15,31 +23,30 @@ $(document).ready ->
               composer.val("")
               composer.unbind()
 
-    # Copy to clipboard
-    clip = new ZeroClipboard.Client()
-    clip.glue('copy')
-    clip.addEventListener 'onComplete', (client, text) ->
-        $('body').css('background-color': "#213e4a")
-        setTimeout ->
-                $('body').css 'background-color' : "#355664"
-        , 300
-    clip.addEventListener 'onMouseDown', (client)->
-        clip.setText( composer.val() )
-    $(window).resize ->
-        clip.reposition()
+    if hasFlash()
+        # Copy to clipboard
+        clip = new ZeroClipboard.Client()
+        clip.glue('copy','copyholder')
+        clip.addEventListener 'onComplete', (client, text) ->
+            $('body').css('background-color': "#213e4a")
+            setTimeout ->
+                    $('body').css 'background-color' : "#355664"
+            , 300
+        clip.addEventListener 'onMouseDown', (client)->
+            clip.setText( composer.val() )
+    else
+        $('#copyholder').click ->
+            window.prompt "Copy to clipboard: Ctrl+C, Enter", composer.val()
 
     $('.close').click ->
         $(this).parent().remove()
-        clip.reposition()
 
     window.encipher.success = (mode, cipher)->
         $('.cmd').hide()
         $('.' + mode).show()
-        clip.reposition()
 
     $('.cmd').hide()
     $('.plain').show()
-    clip.reposition()
 
     # Send to socials
     $('.gmail').click ->

@@ -272,8 +272,15 @@ div.footer a.up{
     background: url(/images/encipher.png) no-repeat 5px center;
 }
 
-#copy {
+#copyholder {
     background: url(/images/copy.png) no-repeat 5px center;
+    position:relative;
+}
+
+#copy {
+    display: block;
+    height: 100%;
+    width: 100%;
 }
 
 .gmail {

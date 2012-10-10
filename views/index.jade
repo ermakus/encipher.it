@@ -31,7 +31,8 @@ block contents
                         a.encipher.button(href=def_bookmarklet)
                             b Encipher It
                     span.right
-                        a.cmd.plain.cipher.link#copy.button(href='#',title="Copy to Clipboard") Copy
+                        a#copyholder.cmd.plain.cipher.link.button(href='#',title="Copy to Clipboard")
+                            span#copy Copy
                         a.cmd.plain.cipher.link.gmail.button(href="#",title="Send to GMail") GMail
                         a.cmd.link.facebook.button(href="#",title="Send to Facebook friend") Facebook
                         a.cmd.link.twitter.button(href="#",title="Send to Twitter") Twitter

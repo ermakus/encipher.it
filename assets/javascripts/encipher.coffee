@@ -34,6 +34,7 @@ GUI = (encipher)-> """
     padding-left: 3px;
     width: 100%;
     height: 25px;
+    line-height: 25px;
     -moz-border-radius: 4px; 
     -webkit-border-radius: 4px; 
     border-radius: 4px;
@@ -354,7 +355,6 @@ class LinkFormat extends TextFormat
     unpack: (message, cb)->
         url = @extractCipher( message )
         return cb(null, message) if not url
-        console.log url
         guid = url[@base.length+1...]
         jQuery.post @base + "/pub", {guid}, (res)=>
             cb(null, res)
