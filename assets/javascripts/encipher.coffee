@@ -218,13 +218,13 @@ class Popup
 
     refresh: ->
         if @key() != ''
-            jQuery('.encipher-it').show()
+            jQuery('.encipher-key-mode,.encipher-it').show()
         else
-            jQuery('.encipher-it').hide()
+            jQuery('.encipher-key-mode,.encipher-it').hide()
 
     # Enter key
     input: ( title, button, callback ) ->
-        jQuery('.encipher-key-input').focus().val("").unbind().keyup (e)=>
+        jQuery('.encipher-key-input').val("").unbind().keyup (e)=>
             score = @score()
             jQuery('.encipher-message').html(score)
             if (e.which == 27) then return @hide()
@@ -233,6 +233,7 @@ class Popup
         jQuery('.encipher-title').html( title )
         jQuery('.encipher-tab').hide()
         jQuery('.encipher-tab-key').show()
+        jQuery('.encipher-key-input:visible').focus()
         jQuery('.encipher-it').html( button ).unbind().bind 'click', => callback(@key())
         @message("")
         @refresh()
