@@ -218,9 +218,9 @@ class Popup
 
     refresh: ->
         if @key() != ''
-            jQuery('.encipher-key-mode,.encipher-it').show()
+            jQuery('.encipher-it').show()
         else
-            jQuery('.encipher-key-mode,.encipher-it').hide()
+            jQuery('.encipher-it').hide()
 
     # Enter key
     input: ( title, button, callback ) ->
