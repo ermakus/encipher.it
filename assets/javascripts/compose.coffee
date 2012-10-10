@@ -16,7 +16,7 @@ $(document).ready ->
               composer.val("")
               composer.unbind()
 
-    if FlashDetect..majorAtLeast(9)
+    if FlashDetect.majorAtLeast(9)
         # Copy to clipboard
         clip = new ZeroClipboard.Client()
         clip.glue('copy','copyholder')
