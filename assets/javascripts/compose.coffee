@@ -35,6 +35,7 @@ $(document).ready ->
         clip.addEventListener 'onMouseDown', (client)->
             clip.setText( composer.val() )
     else
+        alert "No flash"
         $('#copyholder').click ->
             window.prompt "Copy to clipboard: Ctrl+C, Enter", composer.val()
 
