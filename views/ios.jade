@@ -12,8 +12,7 @@ html(xmlns='http://www.w3.org/1999/xhtml', manifest="/cache.manifest")
     script(type='text/javascript', src='/javascripts/jquery.min.js')
     script(type='text/javascript', src='/javascripts/iscroll-lite.js')
     script
-      var encipher_it = #{def_code};
-
+      var encipher_it = (function(){document.body.appendChild(document.createElement('script')).src='https://encipher.it/javascripts/inject.vios.js';});
       $(document).ready( function() {
         var helpScroll = new iScroll('wrapper');
         var txtdef = "Sample text";
