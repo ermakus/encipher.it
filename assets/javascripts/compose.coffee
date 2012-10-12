@@ -55,3 +55,8 @@ $(document).ready ->
             name: "Click here to read encrypted message"
             link: composer.val()
         )
+
+    if (window.location.hash or "").match /EnCt2/
+        composer.val(window.location.hash)
+        encipher.startup()
+        

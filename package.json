@@ -1,6 +1,10 @@
 {
   "author": "Anton Ermak <anton@ermak.us> (http://ermak.us)",
   "name": "encipher.it",
+  "main": "desktop.html",
+  "window": {
+    "toolbar": false
+  },
   "description": "In-browser solution to encrypt text messages",
   "version": "1.1.0",
   "homepage": "https://encipher.it",
