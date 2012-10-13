@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <title>Encipher It</title>
+        <link rel="stylesheet" href="stylesheets/style.css">
+        <style>
+            div, textarea, html, body {
+                margin: 0;
+                padding: 0;
+            }
+            .gui-toolbar {
+                padding-top: 2px;
+                height: 34px;
+                width: 100%;
+                color: white;
+            }
+            .gui-composer {
+                position: fixed;
+                font-size: 16px;
+                font-family: monospace;
+                padding: 4px;
+                width: 100%;
+                top: 32px;
+                bottom: 0px;
+            }
+        </style>
+        <script type="text/javascript" src="javascripts/jquery.min.js"></script>
+        <script type="text/javascript" src="javascripts/AES.js"></script>
+        <script type="text/javascript" src="javascripts/sha1.js"></script>
+        <script type="text/javascript" src="javascripts/pbkdf2.js"></script>
+        <script type="text/javascript" src="javascripts/base64.js"></script>
+        <script type="text/javascript" src="javascripts/utf8.js"></script>
+        <script type="text/coffeescript" src="../assets/javascripts/encipher.coffee"></script>
+        <script type="text/coffeescript">
+            $ ->
+                path = require 'path'
+                base = 'file://' + path.dirname(path.dirname(process.execPath)) + '/public'
+                encipher = new Encipher(base)
+                $('.encipher').click ->
+                    encipher.startup()
+        </script>
+        <script type="text/javascript" src="javascripts/coffee-script.js"></script>
+    </head>
+<body>
+<div class="gui-toolbar">
+    <a class="button encipher" href="#">Encipher It</a>
+    <span>Runtime <script>document.write(process.version)</script></span>
+</div>
+</div>
+<textarea class="gui-composer" autofocus="autofocus"></textarea>
+</body>
+</html>

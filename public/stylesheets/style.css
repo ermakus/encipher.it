@@ -92,7 +92,7 @@ div.footer .line{
 }
 
 div.nav{
-	background:url(/images/gradient_light.jpg) repeat-x 50% 50% #f8f8f8;
+	background:url(../images/gradient_light.jpg) repeat-x 50% 50% #f8f8f8;
 	padding:0 5px;
 	position:absolute;
 	right:0;
@@ -139,7 +139,7 @@ div.nav ul li a:hover{
 	background-color:#f0f0f0;
 }
 
-textarea, .button, div.nav, div.article, div.nav ul li a,div.figure{
+#txt, .button, div.nav, div.article, div.nav ul li a,div.figure{
 	/* Applying CSS3 rounded corners: */
 	-moz-border-radius:10px;
 	-webkit-border-radius:10px;
@@ -269,11 +269,11 @@ div.footer a.up{
 }
 
 .encipher {
-    background: url(/images/encipher.png) no-repeat 5px center;
+    background: url(../images/encipher.png) no-repeat 5px center;
 }
 
 #copyholder {
-    background: url(/images/copy.png) no-repeat 5px center;
+    background: url(../images/copy.png) no-repeat 5px center;
     position:relative;
 }
 
@@ -284,15 +284,15 @@ div.footer a.up{
 }
 
 .gmail {
-    background: url(/images/gmail.png) no-repeat 5px center;
+    background: url(../images/gmail.png) no-repeat 5px center;
 }
 
 .facebook {
-    background: url(/images/facebook.png) no-repeat 5px center;
+    background: url(../images/facebook.png) no-repeat 5px center;
 }
 
 .twitter {
-    background: url(/images/twitter.png) no-repeat 5px center;
+    background: url(../images/twitter.png) no-repeat 5px center;
 }
 
 
@@ -314,5 +314,5 @@ div.footer a.up{
 }
 
 .encipher-close {
-    background: url(/images/close-white.png) no-repeat center center;
+    background: url(../images/close-white.png) no-repeat center center;
 }
