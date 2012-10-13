@@ -5,7 +5,6 @@ window.fbAsyncInit = ->
         appId:'159179810783818'
     FB.XFBML.parse(document.getElementById('like'))
 
-
 $(document).ready ->
 
     # Composer box
@@ -26,6 +25,7 @@ $(document).ready ->
                     $('body').css 'background-color' : "#355664"
             , 300
         clip.addEventListener 'onMouseDown', (client)->
+            _gaq and _gaq.push(["_trackEvent", "composer", "copy"])
             clip.setText( composer.val() )
     else
         $('#copyholder').click ->
@@ -35,6 +35,7 @@ $(document).ready ->
         $(this).parent().remove()
 
     window.encipher.success = (mode, cipher)->
+        _gaq and _gaq.push(["_trackEvent", "encipher", mode])
         $('.cmd').hide()
         $('.' + mode).show()
 
@@ -43,13 +44,16 @@ $(document).ready ->
 
     # Send to socials
     $('.gmail').click ->
+        _gaq and _gaq.push(["_trackEvent", "composer", "gmail"])
         window.open "https://mail.google.com/mail/?view=cm&ui=2&tf=0&fs=1&to=&su=" +
                     "&body=" + encodeURIComponent(composer.val())
 
     $('.twitter').click ->
+        _gaq and _gaq.push(["_trackEvent", "composer", "twitter"])
         window.open "https://twitter.com/home?status=" + encodeURIComponent(composer.val())
 
     $('.facebook').click ->
+        _gaq and _gaq.push(["_trackEvent", "composer", "facebook"])
         FB.ui(
             method: 'send'
             name: "Click here to read encrypted message"
