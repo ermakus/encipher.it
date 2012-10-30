@@ -2,7 +2,8 @@
 html
     head
         title= title
-        meta(name="description") Text encryptor for Google Mail or anything else
+        meta(name="description", content="Encrypting email with Encipher.it is a simple way to protect your sensitive data. You can encrypt emails or text messages and only the recipient can decrypt it with correct password. Encipher.it integrated with google mail and many other web applications.")
+
         link(rel='stylesheet', href='/stylesheets/style.css')
         link(rel='stylesheet', href='/stylesheets/contactable.css')
         script(type='text/javascript', src='/javascripts/jquery.min.js')
@@ -21,6 +22,8 @@ html
         script(type="text/javascript", src="/javascripts/flashdetect.min.js")
         script(type="text/javascript", src="/javascripts/ZeroClipboard.min.js")
         script(type="text/javascript", src="https://connect.facebook.net/en_US/all.js")
+        script(type="text/javascript", src="https://apis.google.com/js/plusone.js")
+        script#twitter-wjs(type="text/javascript", src="//platform.twitter.com/widgets.js");
         script
             var _gaq = _gaq || [];
             _gaq.push(['_setAccount', 'UA-17946320-4']);
@@ -47,8 +50,15 @@ html
                             a(href="/help") Help
                         li
                             a(href="/ios") Mobile
+                    ul.shares
                         li#like
                             fb:like(href="https://encipher.it",send="false",layout="button_count",width="80",show-faces="false")
+                        li
+                            a(href="https://twitter.com/share",class="twitter-share-button",data-via="encipherit") Tweet
+                        li
+                            g:plusone(size="medium")
+
+
             block contents
             .footer
                 .line

@@ -15,7 +15,7 @@
             }
             .gui-composer {
                 position: fixed;
-                font-size: 16px;
+                font-size: 15px;
                 font-family: monospace;
                 padding: 4px;
                 width: 100%;
@@ -33,9 +33,15 @@
         <script type="text/coffeescript">
             $ ->
                 path = require 'path'
+                gui = require 'nw.gui'
                 base = 'file://' + path.dirname(path.dirname(process.execPath)) + '/public'
                 encipher = new Encipher(base)
                 $('.encipher').click ->
+                    encipher.startup()
+                window.setTimeout = global.setTimeout
+                text = gui.Clipboard.get().get('text')
+                $('.gui-composer').val( JSON.stringify(text) )
+                if text
                     encipher.startup()
         </script>
         <script type="text/javascript" src="javascripts/coffee-script.js"></script>

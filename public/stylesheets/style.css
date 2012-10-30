@@ -239,7 +239,7 @@ div.footer a.up{
 
 #like {
     display: inline-block;
-    margin-top: 10px;
+    margin-top: 1px;
     width: 100px;
 }
 
@@ -315,4 +315,10 @@ div.footer a.up{
 
 .encipher-close {
     background: url(../images/close-white.png) no-repeat center center;
+}
+
+
+.shares li {
+    height: 30px;
+    vertical-align: middle;
 }

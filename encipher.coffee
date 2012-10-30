@@ -47,26 +47,26 @@ app.get '/', (req, res)->
         store.loadHash parts[0], (error, cipher)->
             console.log "Hash", parts[0], "Body", cipher
             res.render 'index',
-                title: 'You Got Encrypted Message'
+                title: 'You got encrypted Message'
                 cipher: cipher or (error and error.message)
                 encrypted: true
                 def_bookmarklet: bookmarklet()
     else
         res.render 'index',
-            title: 'Encipher.it – encrypt text or email in one click'
+            title: 'Encipher.it – Encrypt text or email message in one click'
             cipher: "Sample text"
             encrypted: false
             def_bookmarklet: bookmarklet()
 
 app.get '/help', (req, res)->
     res.render 'help', {
-        title: 'Encipher.it – How to encrypt emails and text messages'
+        title: 'Encipher.it – How to encrypt email and text messages'
         def_bookmarklet: bookmarklet()
     }
 
 app.get '/ios', (req, res)->
     res.render 'ios', {
-        title: 'Encipher.it - iOS version'
+        title: 'Encipher.it - Mobile version'
         def_bookmarklet: bookmarklet('ios')
         layout: false
     }
