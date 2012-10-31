@@ -432,7 +432,7 @@ window.Encipher = class Encipher
         # Check for gmail first
         # New composer
         node = jQuery('div.editable[g_editable=true]:visible')
-        if node.length then return [node, node.html()]
+        if node.length then return [node, node.text()]
         # Rich formatting
         node = jQuery('iframe.editable:visible').contents().find('body')
         if node.length then return [node, node.html()]
