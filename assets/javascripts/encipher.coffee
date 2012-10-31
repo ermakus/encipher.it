@@ -534,7 +534,10 @@ window.Encipher = class Encipher
         if node.is('textarea')
             node.val( value.replace(/<(?:.|\n)*?>/gm, '\n'))
         else
-            node.html( value.replace(/\n/g,'<br/>') )
+            if node.is('body')
+                node.html( value.replace(/\n/g,'<br/>') )
+            else
+                node.text( value )
 
     # Unpack all supported formats
     unpack: (message, callback) ->
