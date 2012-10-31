@@ -432,7 +432,7 @@ window.Encipher = class Encipher
         # Check for gmail first
         # New composer
         node = jQuery('div.editable[g_editable=true]:visible')
-        if node.length then return [node, node.text()]
+        if node.length then return [node, node.html()]
         # Rich formatting
         node = jQuery('iframe.editable:visible').contents().find('body')
         if node.length then return [node, node.html()]
@@ -534,10 +534,7 @@ window.Encipher = class Encipher
         if node.is('textarea')
             node.val( value.replace(/<(?:.|\n)*?>/gm, '\n'))
         else
-            if node.is('body')
-                node.html( value.replace(/\n/g,'<br/>') )
-            else
-                node.text( value )
+            node.html( value.replace(/\n/g,'<br/>') )
 
     # Unpack all supported formats
     unpack: (message, callback) ->
