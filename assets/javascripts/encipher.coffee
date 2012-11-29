@@ -446,11 +446,11 @@ window.Encipher = class Encipher
         node = jQuery('textarea[name=txtbdy]')
         if node.length == 1 then return [node, node.val()]
         # Return textarea if only one
-        node = jQuery('textarea')
-        if node.length == 1 then return [node, node.val()]
+        #node = jQuery('textarea')
+        #if node.length == 1 then return [node, node.val()]
          # If many textareas, then select focused one
-        if node.length > 1 then node = jQuery('textarea:focus')
-        if node.length == 1 then return [node, node.val()]
+        #if node.length > 1 then node = jQuery('textarea:focus')
+        #if node.length == 1 then return [node, node.val()]
         # Fail finally
         return [undefined,undefined]
 
@@ -550,46 +550,46 @@ window.Encipher = class Encipher
         else
             # Pare DOM
             if @parse()
-                # If encrypted message found, decrypt
-                if @encrypted
-                    @gui.input "Enter decryption key", "Decipher It", (key)=>
-                        @decrypt key, (error, success)=>
-                            if success
-                                if @success
-                                    @success("plain")
-                                @gui.hide()
+                # If input area found, encrypt
+                if @text
+                    @gui.input "Enter encryption key", "Encipher It", (key)=>
+                        @encrypt key, (error, cipher)=>
+                            if error
+                                @gui.message error.message
                             else
-                                if error
-                                    @gui.message error.message
-                                else
-                                    @gui.message "Invalid key"
+                                # Convert to short link, if needed
+                                @gui.settings false, (ok)=>
+                                    if ok
+                                        @format.text.unpack cipher, (error, cipher)=>
+                                            if error
+                                                @gui.message error.message
+                                            else
+                                                @format.link.pack (cipher), (error, cipher)=>
+                                                    if error
+                                                        @gui.message error.message
+                                                    else
+                                                        @updateNode @node, cipher
+                                                        @gui.hide()
+                                                        @success("link", cipher) if @success
+                                    else
+                                        @success("cipher", cipher) if @success
+                                        @gui.hide()
                 else
-                    # If input area found, encrypt
-                    if @text
-                        @gui.input "Enter encryption key", "Encipher It", (key)=>
-                            @encrypt key, (error, cipher)=>
-                                if error
-                                    @gui.message error.message
+                    # If encrypted message found, decrypt
+                    if @encrypted
+                        @gui.input "Enter decryption key", "Decipher It", (key)=>
+                            @decrypt key, (error, success)=>
+                                if success
+                                    if @success
+                                        @success("plain")
+                                    @gui.hide()
                                 else
-                                    # Convert to short link, if needed
-                                    @gui.settings false, (ok)=>
-                                        if ok
-                                            @format.text.unpack cipher, (error, cipher)=>
-                                                if error
-                                                    @gui.message error.message
-                                                else
-                                                    @format.link.pack (cipher), (error, cipher)=>
-                                                        if error
-                                                            @gui.message error.message
-                                                        else
-                                                            @updateNode @node, cipher
-                                                            @gui.hide()
-                                                            @success("link", cipher) if @success
-                                        else
-                                            @success("cipher", cipher) if @success
-                                            @gui.hide()
+                                    if error
+                                        @gui.message error.message
+                                    else
+                                        @gui.message "Invalid key"
                     else
-                        @gui.alert "Message is empty"
+                        @gui.alert "Encrypted message not found"
             else
                 @gui.alert "Message not found"
 
