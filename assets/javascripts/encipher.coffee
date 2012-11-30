@@ -457,6 +457,8 @@ window.Encipher = class Encipher
     parse: ->
         [@nodes, @texts] = @findEncrypted()
         [@node,  @text]  = @findInput()
+        if (@format.text.hasCipher(@text) or @format.link.hasCipher(@text))
+            [@node, @text] = [undefined, undefined]
         @encrypted = @nodes.length > 0
         return @encrypted or @node != undefined
 
