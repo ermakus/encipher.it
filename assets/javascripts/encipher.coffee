@@ -403,8 +403,8 @@ window.Encipher = class Encipher
                 # Element node
                 if (node.nodeType == 1 && !/(script|style)/i.test(node.tagName))
                     # Text area or input
-                    if /(input|textarea)/i.test( node.tagName )
-                        elem = jQuery(node)
+                    elem = jQuery(node)
+                    if /(input|textarea)/i.test( node.tagName ) and elem.is(':visible')
                         found(elem, elem.val())
                     else
                         # Recursive traverse children
@@ -446,8 +446,8 @@ window.Encipher = class Encipher
         node = jQuery('textarea[name=txtbdy]')
         if node.length == 1 then return [node, node.val()]
         # Return textarea if only one
-        #node = jQuery('textarea')
-        #if node.length == 1 then return [node, node.val()]
+        node = jQuery('textarea:visible')
+        if node.length == 1 then return [node, node.val()]
          # If many textareas, then select focused one
         #if node.length > 1 then node = jQuery('textarea:focus')
         #if node.length == 1 then return [node, node.val()]
